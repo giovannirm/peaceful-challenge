@@ -1,46 +1,46 @@
 ﻿import {
-    Entity,
-    Column,
-    PrimaryGeneratedColumn,
-    ManyToOne,
-    JoinColumn,
-    CreateDateColumn,
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn,
+  CreateDateColumn,
 } from 'typeorm';
 import { Employee } from '../../employees/entities/employee.entity';
 
 export enum AttendanceType {
-    ENTRADA = 'entrada',
-    SALIDA = 'salida',
+  CHECK_IN = 'check_in',
+  CHECK_OUT = 'check_out',
 }
 
 @Entity('attendances')
 export class Attendance {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column()
-    employeeId: number;
+  @Column({ name: 'employee_id' })
+  employeeId: number;
 
-    @ManyToOne(() => Employee, (employee) => employee.attendances)
-    @JoinColumn({ name: 'employeeId' })
-    employee: Employee;
+  @ManyToOne(() => Employee, (employee) => employee.attendances)
+  @JoinColumn({ name: 'employee_id' })
+  employee: Employee;
 
-    @Column({
-        type: 'varchar',
-        length: 20,
-        enum: AttendanceType,
-    })
-    tipo: AttendanceType;
+  @Column({
+    type: 'varchar',
+    length: 20,
+    enum: AttendanceType,
+  })
+  type: AttendanceType;
 
-    @Column({ type: 'decimal', precision: 10, scale: 7 })
-    latitud: number;
+  @Column({ type: 'decimal', precision: 10, scale: 7 })
+  latitude: number;
 
-    @Column({ type: 'decimal', precision: 10, scale: 7 })
-    longitud: number;
+  @Column({ type: 'decimal', precision: 10, scale: 7 })
+  longitude: number;
 
-    @Column({ type: 'datetime' })
-    horaRegistro: Date;
+  @Column({ type: 'datetime', name: 'record_time' })
+  recordTime: Date;
 
-    @CreateDateColumn()
-    createdAt: Date;
+  @CreateDateColumn({ name: 'created_at' })
+  createdAt: Date;
 }

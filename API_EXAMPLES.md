@@ -17,16 +17,16 @@ Content-Type: application/json
 ### Request
 
 ```http
-POST /attendance/entrada HTTP/1.1
+POST /attendance/check-in HTTP/1.1
 Host: localhost:3000
 Content-Type: application/json
 
 {
   "employeeId": 1,
-  "tipo": "entrada",
-  "latitud": -12.046374,
-  "longitud": -77.042793,
-  "horaRegistro": "2025-10-30T08:00:00Z"
+  "type": "check_in",
+  "latitude": -12.046374,
+  "longitude": -77.042793,
+  "recordTime": "2025-10-30T08:00:00Z"
 }
 ```
 
@@ -35,10 +35,10 @@ Content-Type: application/json
 ```json
 {
   "employeeId": 1,
-  "tipo": "entrada",
-  "latitud": -12.046374,
-  "longitud": -77.042793,
-  "horaRegistro": "2025-10-30T08:00:00.000Z",
+  "type": "check_in",
+  "latitude": -12.046374,
+  "longitude": -77.042793,
+  "recordTime": "2025-10-30T08:00:00.000Z",
   "id": 1,
   "createdAt": "2025-10-30T08:00:05.123Z"
 }
@@ -71,8 +71,8 @@ Content-Type: application/json
   "statusCode": 400,
   "message": [
     "employeeId must be a number conforming to the specified constraints",
-    "latitud must be a latitude string or number",
-    "longitud must be a longitude string or number"
+    "latitude must be a latitude string or number",
+    "longitude must be a longitude string or number"
   ],
   "error": "Bad Request"
 }
@@ -85,16 +85,16 @@ Content-Type: application/json
 ### Request
 
 ```http
-POST /attendance/salida HTTP/1.1
+POST /attendance/check-out HTTP/1.1
 Host: localhost:3000
 Content-Type: application/json
 
 {
   "employeeId": 1,
-  "tipo": "salida",
-  "latitud": -12.046400,
-  "longitud": -77.042800,
-  "horaRegistro": "2025-10-30T18:00:00Z"
+  "type": "check_out",
+  "latitude": -12.046400,
+  "longitude": -77.042800,
+  "recordTime": "2025-10-30T18:00:00Z"
 }
 ```
 
@@ -103,10 +103,10 @@ Content-Type: application/json
 ```json
 {
   "employeeId": 1,
-  "tipo": "salida",
-  "latitud": -12.0464,
-  "longitud": -77.0428,
-  "horaRegistro": "2025-10-30T18:00:00.000Z",
+  "type": "check_out",
+  "latitude": -12.0464,
+  "longitude": -77.0428,
+  "recordTime": "2025-10-30T18:00:00.000Z",
   "id": 2,
   "createdAt": "2025-10-30T18:00:02.456Z"
 }
@@ -150,37 +150,37 @@ Host: localhost:3000
   {
     "id": 4,
     "employeeId": 1,
-    "tipo": "salida",
-    "latitud": -12.0464,
-    "longitud": -77.0428,
-    "horaRegistro": "2025-10-30T18:00:00.000Z",
+    "type": "check_out",
+    "latitude": -12.0464,
+    "longitude": -77.0428,
+    "recordTime": "2025-10-30T18:00:00.000Z",
     "createdAt": "2025-10-30T18:00:02.456Z"
   },
   {
     "id": 3,
     "employeeId": 1,
-    "tipo": "entrada",
-    "latitud": -12.046374,
-    "longitud": -77.042793,
-    "horaRegistro": "2025-10-30T08:00:00.000Z",
+    "type": "check_in",
+    "latitude": -12.046374,
+    "longitude": -77.042793,
+    "recordTime": "2025-10-30T08:00:00.000Z",
     "createdAt": "2025-10-30T08:00:05.123Z"
   },
   {
     "id": 2,
     "employeeId": 1,
-    "tipo": "salida",
-    "latitud": -12.046374,
-    "longitud": -77.042793,
-    "horaRegistro": "2025-10-29T18:00:00.000Z",
+    "type": "check_out",
+    "latitude": -12.046374,
+    "longitude": -77.042793,
+    "recordTime": "2025-10-29T18:00:00.000Z",
     "createdAt": "2025-10-29T18:00:01.789Z"
   },
   {
     "id": 1,
     "employeeId": 1,
-    "tipo": "entrada",
-    "latitud": -12.046374,
-    "longitud": -77.042793,
-    "horaRegistro": "2025-10-29T08:00:00.000Z",
+    "type": "check_in",
+    "latitude": -12.046374,
+    "longitude": -77.042793,
+    "recordTime": "2025-10-29T08:00:00.000Z",
     "createdAt": "2025-10-29T08:00:03.234Z"
   }
 ]
@@ -211,14 +211,14 @@ Host: localhost:3000
 #### Paso 1: Marcar entrada
 
 ```bash
-curl -X POST http://localhost:3000/attendance/entrada \
+curl -X POST http://localhost:3000/attendance/check-in \
   -H "Content-Type: application/json" \
   -d '{
     "employeeId": 1,
-    "tipo": "entrada",
-    "latitud": -12.046374,
-    "longitud": -77.042793,
-    "horaRegistro": "2025-10-30T08:00:00Z"
+    "type": "check_in",
+    "latitude": -12.046374,
+    "longitude": -77.042793,
+    "recordTime": "2025-10-30T08:00:00Z"
   }'
 ```
 
@@ -227,14 +227,14 @@ curl -X POST http://localhost:3000/attendance/entrada \
 #### Paso 2: Marcar salida
 
 ```bash
-curl -X POST http://localhost:3000/attendance/salida \
+curl -X POST http://localhost:3000/attendance/check-out \
   -H "Content-Type: application/json" \
   -d '{
     "employeeId": 1,
-    "tipo": "salida",
-    "latitud": -12.046400,
-    "longitud": -77.042800,
-    "horaRegistro": "2025-10-30T18:00:00Z"
+    "type": "check_out",
+    "latitude": -12.046400,
+    "longitude": -77.042800,
+    "recordTime": "2025-10-30T18:00:00Z"
   }'
 ```
 
@@ -247,14 +247,14 @@ curl -X POST http://localhost:3000/attendance/salida \
 #### Paso 1: Marcar primera entrada
 
 ```bash
-curl -X POST http://localhost:3000/attendance/entrada \
+curl -X POST http://localhost:3000/attendance/check-in \
   -H "Content-Type: application/json" \
   -d '{
     "employeeId": 2,
-    "tipo": "entrada",
-    "latitud": -12.046374,
-    "longitud": -77.042793,
-    "horaRegistro": "2025-10-30T08:00:00Z"
+    "type": "check_in",
+    "latitude": -12.046374,
+    "longitude": -77.042793,
+    "recordTime": "2025-10-30T08:00:00Z"
   }'
 ```
 
@@ -263,14 +263,14 @@ curl -X POST http://localhost:3000/attendance/entrada \
 #### Paso 2: Intentar marcar segunda entrada sin salida
 
 ```bash
-curl -X POST http://localhost:3000/attendance/entrada \
+curl -X POST http://localhost:3000/attendance/check-in \
   -H "Content-Type: application/json" \
   -d '{
     "employeeId": 2,
-    "tipo": "entrada",
-    "latitud": -12.046374,
-    "longitud": -77.042793,
-    "horaRegistro": "2025-10-30T09:00:00Z"
+    "type": "check_in",
+    "latitude": -12.046374,
+    "longitude": -77.042793,
+    "recordTime": "2025-10-30T09:00:00Z"
   }'
 ```
 
@@ -289,14 +289,14 @@ curl -X POST http://localhost:3000/attendance/entrada \
 ### Caso 3: Error - Salida sin Entrada
 
 ```bash
-curl -X POST http://localhost:3000/attendance/salida \
+curl -X POST http://localhost:3000/attendance/check-out \
   -H "Content-Type: application/json" \
   -d '{
     "employeeId": 3,
-    "tipo": "salida",
-    "latitud": -12.046374,
-    "longitud": -77.042793,
-    "horaRegistro": "2025-10-30T18:00:00Z"
+    "type": "check_out",
+    "latitude": -12.046374,
+    "longitude": -77.042793,
+    "recordTime": "2025-10-30T18:00:00Z"
   }'
 ```
 
@@ -315,14 +315,14 @@ curl -X POST http://localhost:3000/attendance/salida \
 ### Caso 4: Error - Coordenadas Inválidas
 
 ```bash
-curl -X POST http://localhost:3000/attendance/entrada \
+curl -X POST http://localhost:3000/attendance/check-in \
   -H "Content-Type: application/json" \
   -d '{
     "employeeId": 1,
-    "tipo": "entrada",
-    "latitud": 100,
-    "longitud": 200,
-    "horaRegistro": "2025-10-30T08:00:00Z"
+    "type": "check_in",
+    "latitude": 100,
+    "longitude": 200,
+    "recordTime": "2025-10-30T08:00:00Z"
   }'
 ```
 
@@ -332,8 +332,8 @@ curl -X POST http://localhost:3000/attendance/entrada \
 {
   "statusCode": 400,
   "message": [
-    "latitud must be a latitude string or number",
-    "longitud must be a longitude string or number"
+    "latitude must be a latitude string or number",
+    "longitude must be a longitude string or number"
   ],
   "error": "Bad Request"
 }
@@ -346,28 +346,28 @@ curl -X POST http://localhost:3000/attendance/entrada \
 #### Paso 1: Marcar entrada a las 8:00
 
 ```bash
-curl -X POST http://localhost:3000/attendance/entrada \
+curl -X POST http://localhost:3000/attendance/check-in \
   -H "Content-Type: application/json" \
   -d '{
     "employeeId": 4,
-    "tipo": "entrada",
-    "latitud": -12.046374,
-    "longitud": -77.042793,
-    "horaRegistro": "2025-10-30T08:00:00Z"
+    "type": "check_in",
+    "latitude": -12.046374,
+    "longitude": -77.042793,
+    "recordTime": "2025-10-30T08:00:00Z"
   }'
 ```
 
 #### Paso 2: Intentar marcar salida a las 7:00
 
 ```bash
-curl -X POST http://localhost:3000/attendance/salida \
+curl -X POST http://localhost:3000/attendance/check-out \
   -H "Content-Type: application/json" \
   -d '{
     "employeeId": 4,
-    "tipo": "salida",
-    "latitud": -12.046374,
-    "longitud": -77.042793,
-    "horaRegistro": "2025-10-30T07:00:00Z"
+    "type": "check_out",
+    "latitude": -12.046374,
+    "longitude": -77.042793,
+    "recordTime": "2025-10-30T07:00:00Z"
   }'
 ```
 
@@ -388,25 +388,25 @@ curl -X POST http://localhost:3000/attendance/salida \
 ```javascript
 // Lima - Plaza de Armas
 {
-  "latitud": -12.046374,
-  "longitud": -77.042793
+  "latitude": -12.046374,
+  "longitude": -77.042793
 }
 
 // Lima - Miraflores
 {
-  "latitud": -12.119259,
-  "longitud": -77.037525
+  "latitude": -12.119259,
+  "longitude": -77.037525
 }
 
 // Arequipa - Plaza de Armas
 {
-  "latitud": -16.398866,
-  "longitud": -71.536961
+  "latitude": -16.398866,
+  "longitude": -71.536961
 }
 
 // Cusco - Plaza de Armas
 {
-  "latitud": -13.516667,
-  "longitud": -71.978771
+  "latitude": -13.516667,
+  "longitude": -71.978771
 }
 ```

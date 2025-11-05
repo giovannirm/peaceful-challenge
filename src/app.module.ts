@@ -19,7 +19,7 @@ import { AttendanceModule } from './attendance/attendance.module';
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: false,
       options: {
-        encrypt: false, // Cambiar a true si usas Azure SQL
+        encrypt: true, // Cambiar a true si usas Azure SQL
         trustServerCertificate: true,
       },
     }),
@@ -27,4 +27,4 @@ import { AttendanceModule } from './attendance/attendance.module';
     AttendanceModule,
   ],
 })
-export class AppModule { }
+export class AppModule {}

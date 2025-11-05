@@ -6,18 +6,18 @@ import { CreateAttendanceDto } from './dto/create-attendance.dto';
 export class AttendanceController {
     constructor(private readonly attendanceService: AttendanceService) { }
 
-    @Post('entrada')
-    marcarEntrada(@Body() createAttendanceDto: CreateAttendanceDto) {
-        return this.attendanceService.marcarEntrada(createAttendanceDto);
+    @Post('check-in')
+    checkIn(@Body() createAttendanceDto: CreateAttendanceDto) {
+        return this.attendanceService.checkIn(createAttendanceDto);
     }
 
-    @Post('salida')
-    marcarSalida(@Body() createAttendanceDto: CreateAttendanceDto) {
-        return this.attendanceService.marcarSalida(createAttendanceDto);
+    @Post('check-out')
+    checkOut(@Body() createAttendanceDto: CreateAttendanceDto) {
+        return this.attendanceService.checkOut(createAttendanceDto);
     }
 
     @Get('employee/:id')
-    obtenerAsistencias(@Param('id', ParseIntPipe) employeeId: number) {
-        return this.attendanceService.obtenerAsistencias(employeeId);
+    getAttendances(@Param('id', ParseIntPipe) employeeId: number) {
+        return this.attendanceService.getAttendances(employeeId);
     }
 }

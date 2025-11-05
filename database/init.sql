@@ -1,24 +1,24 @@
-﻿IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = 'AsistenciaDB')
+﻿IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = 'peaceful_db')
 BEGIN
-    CREATE DATABASE AsistenciaDB;
+    CREATE DATABASE peaceful_db;
 END
 GO
 
-USE AsistenciaDB;
+USE peaceful_db;
 GO
 
 IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'employees')
 BEGIN
     CREATE TABLE employees (
         id INT PRIMARY KEY IDENTITY(1,1),
-        nombre VARCHAR(100) NOT NULL,
-        apellido VARCHAR(100) NOT NULL,
-        numeroDocumento VARCHAR(20) NOT NULL UNIQUE
+        first_name VARCHAR(100) NOT NULL,
+        last_name VARCHAR(100) NOT NULL,
+        document_number VARCHAR(20) NOT NULL UNIQUE
     );
 END
 GO
 
-    INSERT INTO employees (nombre, apellido, numeroDocumento) VALUES 
+    INSERT INTO employees (first_name, last_name, document_number) VALUES 
     ('Juan', 'Pérez', '12345678'),
     ('María', 'García', '87654321'),
     ('Carlos', 'López', '11223344'),
@@ -31,13 +31,13 @@ IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'attendances')
 BEGIN
     CREATE TABLE attendances (
         id INT PRIMARY KEY IDENTITY(1,1),
-        employeeId INT NOT NULL,
-        tipo VARCHAR(20) NOT NULL CHECK (tipo IN ('entrada', 'salida')),
-        latitud DECIMAL(10, 7) NOT NULL,
-        longitud DECIMAL(10, 7) NOT NULL,
-        horaRegistro DATETIME NOT NULL,
-        createdAt DATETIME DEFAULT GETDATE(),
-        FOREIGN KEY (employeeId) REFERENCES employees(id)
+        employee_id INT NOT NULL,
+        type VARCHAR(20) NOT NULL CHECK (type IN ('check_in', 'check_out')),
+        latitude DECIMAL(10, 7) NOT NULL,
+        longitude DECIMAL(10, 7) NOT NULL,
+        record_time DATETIME NOT NULL,
+        created_at DATETIME DEFAULT GETDATE(),
+        FOREIGN KEY (employee_id) REFERENCES employees(id)
     );
 END
 GO
