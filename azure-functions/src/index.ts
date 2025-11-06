@@ -3,6 +3,9 @@ import {
   ServiceBusQueueFunctionOptions,
   InvocationContext,
 } from '@azure/functions';
+import { EmailService } from './services/email.service';
+import { EMAIL_CONSTANTS } from './constants/email.constants';
+import { ERROR_MESSAGES } from './constants/error-messages.constants';
 
 interface LateCheckInNotificationMessage {
   employeeId: number;
@@ -37,29 +40,30 @@ app.serviceBusQueue('NotifyLateCheckIn', {
         !message.checkInTime ||
         message.lateMinutes === undefined
       ) {
-        throw new Error('Mensaje inválido: faltan campos requeridos');
+        throw new Error(ERROR_MESSAGES.INVALID_MESSAGE);
       }
 
       // Preparar el contenido del email
       const checkInDate = new Date(message.checkInTime);
       const emailSubject = `Notificación de Tardanza - ${message.employeeName}`;
-      const emailBody = `
+
+      const emailText = `
 Estimado/a ${message.employeeName},
 
 Le informamos que se ha registrado una tardanza en su entrada del día ${checkInDate.toLocaleDateString(
-        'es-ES',
+        EMAIL_CONSTANTS.LOCALE.ES_ES,
         {
-          weekday: 'long',
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
+          weekday: EMAIL_CONSTANTS.DATE_FORMAT.WEEKDAY,
+          year: EMAIL_CONSTANTS.DATE_FORMAT.YEAR,
+          month: EMAIL_CONSTANTS.DATE_FORMAT.MONTH,
+          day: EMAIL_CONSTANTS.DATE_FORMAT.DAY,
         },
       )}.
 
 Detalles:
-- Hora de entrada registrada: ${checkInDate.toLocaleTimeString('es-ES')}
+- Hora de entrada registrada: ${checkInDate.toLocaleTimeString(EMAIL_CONSTANTS.LOCALE.ES_ES)}
 - Minutos de tardanza: ${message.lateMinutes} minutos
-- Fecha: ${checkInDate.toLocaleDateString('es-ES')}
+- Fecha: ${checkInDate.toLocaleDateString(EMAIL_CONSTANTS.LOCALE.ES_ES)}
 
 Por favor, justifique su tardanza según los procedimientos establecidos en la empresa.
 
@@ -67,30 +71,69 @@ Saludos cordiales,
 Sistema de Control de Asistencia
       `.trim();
 
-      // TODO: Implementar envío real de email
-      // Opciones:
-      // 1. Azure Communication Services Email
-      // 2. SendGrid
-      // 3. Office 365 / Microsoft Graph API
-      // 4. SMTP directo
+      // Generar versión HTML del correo
+      const emailHtml = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background-color: #f4f4f4; padding: 20px; border-radius: 5px; }
+    .content { padding: 20px 0; }
+    .details { background-color: #f9f9f9; padding: 15px; border-left: 4px solid #007bff; margin: 20px 0; }
+    .footer { margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 12px; color: #666; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h2>Notificación de Tardanza</h2>
+    </div>
+    <div class="content">
+      <p>Estimado/a <strong>${message.employeeName}</strong>,</p>
+      <p>Le informamos que se ha registrado una tardanza en su entrada del día <strong>${checkInDate.toLocaleDateString(
+        EMAIL_CONSTANTS.LOCALE.ES_ES,
+        {
+          weekday: EMAIL_CONSTANTS.DATE_FORMAT.WEEKDAY,
+          year: EMAIL_CONSTANTS.DATE_FORMAT.YEAR,
+          month: EMAIL_CONSTANTS.DATE_FORMAT.MONTH,
+          day: EMAIL_CONSTANTS.DATE_FORMAT.DAY,
+        },
+      )}</strong>.</p>
+      
+      <div class="details">
+        <h3>Detalles:</h3>
+        <ul>
+          <li><strong>Hora de entrada registrada:</strong> ${checkInDate.toLocaleTimeString(EMAIL_CONSTANTS.LOCALE.ES_ES)}</li>
+          <li><strong>Minutos de tardanza:</strong> ${message.lateMinutes} minutos</li>
+          <li><strong>Fecha:</strong> ${checkInDate.toLocaleDateString(EMAIL_CONSTANTS.LOCALE.ES_ES)}</li>
+        </ul>
+      </div>
+      
+      <p>Por favor, justifique su tardanza según los procedimientos establecidos en la empresa.</p>
+    </div>
+    <div class="footer">
+      <p>Saludos cordiales,<br>Sistema de Control de Asistencia</p>
+    </div>
+  </div>
+</body>
+</html>
+      `.trim();
 
-      // Por ahora, solo logueamos el email que se enviaría
-      context.log('=== EMAIL A ENVIAR ===');
-      context.log(`Para: ${message.employeeEmail}`);
-      context.log(`Asunto: ${emailSubject}`);
-      context.log(`Cuerpo:\n${emailBody}`);
-      context.log('======================');
+      // Enviar correo usando nodemailer
+      context.log(`Enviando correo a ${message.employeeEmail}...`);
 
-      // Simular envío de email (reemplazar con implementación real)
-      // Cuando se implemente, descomentar y usar await:
-      // await sendEmail({
-      //   to: message.employeeEmail,
-      //   subject: emailSubject,
-      //   body: emailBody,
-      // });
+      const emailService = new EmailService();
+      await emailService.sendEmail(
+        message.employeeEmail,
+        emailSubject,
+        emailText,
+        emailHtml,
+      );
 
-      // Simular procesamiento asíncrono para evitar warning de función async sin await
-      await Promise.resolve();
+      context.log(`Correo enviado exitosamente a ${message.employeeEmail}`);
 
       context.log(
         `Notificación de tardanza procesada exitosamente para empleado ${message.employeeId}`,
@@ -98,9 +141,7 @@ Sistema de Control de Asistencia
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : String(error);
-      context.error(
-        `Error al procesar notificación de tardanza: ${errorMessage}`,
-      );
+      context.error(ERROR_MESSAGES.PROCESSING_FAILED(errorMessage));
       // El mensaje se moverá a la dead letter queue si falla después de los reintentos
       throw error;
     }

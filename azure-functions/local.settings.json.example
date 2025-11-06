@@ -1,0 +1,12 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "node",
+    "SERVICE_BUS_CONNECTION_STRING": "Endpoint=sb://your-namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=your-key",
+    "SERVICE_BUS_QUEUE_NAME": "late-checkin-notifications",
+    "EMAIL_USER": "your-email@gmail.com",
+    "EMAIL_APP_PASSWORD": "your-app-password-here"
+  }
+}
+

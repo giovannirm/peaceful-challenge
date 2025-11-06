@@ -36,7 +36,7 @@ azure-functions/
    ```
 
 2. **Configurar variables de entorno local**:
-   Crea un archivo `local.settings.json`:
+   Crea un archivo `local.settings.json` basado en `local.settings.json.example`:
    ```json
    {
      "IsEncrypted": false,
@@ -44,10 +44,14 @@ azure-functions/
        "AzureWebJobsStorage": "UseDevelopmentStorage=true",
        "FUNCTIONS_WORKER_RUNTIME": "node",
        "SERVICE_BUS_CONNECTION_STRING": "Endpoint=sb://...",
-       "SERVICE_BUS_QUEUE_NAME": "late-checkin-notifications"
+       "SERVICE_BUS_QUEUE_NAME": "late-checkin-notifications",
+       "EMAIL_USER": "your-email@gmail.com",
+       "EMAIL_APP_PASSWORD": "your-app-password-here"
      }
    }
    ```
+   
+   **Nota**: `EMAIL_USER` y `EMAIL_APP_PASSWORD` son necesarios para el envío de correos usando nodemailer con Gmail.
 
 3. **Compilar TypeScript**:
    ```bash
@@ -101,9 +105,24 @@ Las siguientes variables se configuran automáticamente en Terraform:
 - `FUNCTIONS_WORKER_RUNTIME`: `node`
 - `AzureWebJobsStorage`: Connection string de la Storage Account
 
+**Variables adicionales requeridas para el envío de correos** (configurar manualmente en Azure Portal o en `local.settings.json` para desarrollo local):
+
+- `EMAIL_USER`: Dirección de correo Gmail (ej: `your-email@gmail.com`)
+- `EMAIL_APP_PASSWORD`: Clave de aplicación de Gmail (obtener desde [Google Account Security](https://myaccount.google.com/apppasswords))
+
 ## Implementación de Envío de Email
 
-Actualmente, la función solo loguea el email que se enviaría. Para implementar el envío real, puedes usar:
+La función usa **nodemailer** para enviar correos electrónicos a través de Gmail SMTP. El correo se envía en formato HTML con un diseño profesional.
+
+### Configuración de Gmail
+
+1. Habilita la verificación en 2 pasos en tu cuenta de Google
+2. Genera una clave de aplicación desde [Google Account Security](https://myaccount.google.com/apppasswords)
+3. Usa esa clave como `EMAIL_APP_PASSWORD` (sin espacios)
+
+### Alternativas de Implementación
+
+Si prefieres usar otro servicio de email, puedes reemplazar la implementación:
 
 ### Opción 1: Azure Communication Services Email
 

@@ -67,3 +67,6 @@ override.tf.json
 # Docker
 docker-compose.override.yml
 .env.docker
+
+# Azure Functions
+**/local.settings.json
