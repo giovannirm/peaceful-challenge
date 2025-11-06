@@ -25,7 +25,18 @@ function Write-ErrorMsg {
 
 Write-Info "Configurando el entorno completo..."
 
-# Paso 1: Verificar si existe .env
+# Paso 0: Eliminar archivos .env existentes para regenerarlos
+Write-Info "Limpiando archivos de entorno anteriores..."
+if (Test-Path ".env") {
+    Remove-Item ".env" -Force
+    Write-Success "Archivo .env eliminado"
+}
+if (Test-Path ".env.azure") {
+    Remove-Item ".env.azure" -Force
+    Write-Success "Archivo .env.azure eliminado"
+}
+
+# Paso 1: Verificar si existe .env (ahora debería no existir)
 if (-not (Test-Path ".env")) {
     Write-Warning "Archivo .env no encontrado"
     
@@ -94,9 +105,29 @@ if ($initDb -eq "S" -or $initDb -eq "s") {
     if (Test-Path "iac/terraform/scripts/init-database-automated.ps1") {
         Write-Info "Inicializando base de datos..."
         Set-Location iac/terraform
-        & .\scripts\init-database-automated.ps1
+        try {
+            & .\scripts\init-database-automated.ps1
+            $initExitCode = $LASTEXITCODE
+        } catch {
+            $initExitCode = 1
+            Write-Warning "Error al ejecutar el script de inicialización: $($_.Exception.Message)"
+        }
         Set-Location ../..
-        Write-Success "Base de datos inicializada"
+        if ($initExitCode -eq 0) {
+            Write-Success "Base de datos inicializada exitosamente"
+        } else {
+            Write-Warning ""
+            Write-Warning "La inicialización de la base de datos falló o fue cancelada."
+            Write-Warning "Esto es normal si el servidor SQL aún no existe en Azure."
+            Write-Info ""
+            Write-Info "Para crear el servidor SQL, ejecuta:"
+            Write-Info "  cd iac/terraform"
+            Write-Info "  terraform apply"
+            Write-Info ""
+            Write-Info "Luego puedes inicializar la base de datos con:"
+            Write-Info "  .\scripts\init-database-automated.ps1"
+            Write-Info ""
+        }
     } else {
         Write-Warning "Script de inicializacion no encontrado"
         Write-Info "Puedes inicializar manualmente mas tarde con:"
@@ -114,7 +145,15 @@ Write-Info ""
 Write-Success "Configuracion completada"
 Write-Info ""
 Write-Info "Siguientes pasos:"
-Write-Info "   1. Verifica que el archivo .env tenga las credenciales correctas"
-Write-Info "   2. Ejecuta: npm run docker:up"
-Write-Info "   3. O ejecuta: npm run start (hace setup + docker:up)"
+Write-Info "   1. Si el servidor SQL no existe aún, ejecuta:"
+Write-Info "      cd iac/terraform"
+Write-Info "      terraform apply"
+Write-Info ""
+Write-Info "   2. Si la base de datos no se inicializó, ejecuta:"
+Write-Info "      cd iac/terraform"
+Write-Info "      .\scripts\init-database-automated.ps1"
+Write-Info ""
+Write-Info "   3. Verifica que el archivo .env tenga las credenciales correctas"
+Write-Info "   4. Ejecuta: npm run docker:up"
+Write-Info "   5. O ejecuta: npm run start (hace setup + docker:up)"
 Write-Info ""

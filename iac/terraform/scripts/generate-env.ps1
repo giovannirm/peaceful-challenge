@@ -27,6 +27,8 @@ if ($TerraformDir -ne ".") {
 
 $serverFQDN = $null
 $databaseName = $null
+$serviceBusConnectionString = $null
+$serviceBusQueueName = $null
 
 # Intentar obtener desde Terraform outputs
 try {
@@ -38,6 +40,16 @@ try {
     $databaseNameOutput = terraform output -raw database_name 2>&1
     if ($databaseNameOutput -and -not ($databaseNameOutput -match "Error|Warning|No outputs found")) {
         $databaseName = $databaseNameOutput.Trim()
+    }
+    
+    $serviceBusConnectionStringOutput = terraform output -raw service_bus_connection_string 2>&1
+    if ($serviceBusConnectionStringOutput -and -not ($serviceBusConnectionStringOutput -match "Error|Warning|No outputs found")) {
+        $serviceBusConnectionString = $serviceBusConnectionStringOutput.Trim()
+    }
+    
+    $serviceBusQueueNameOutput = terraform output -raw service_bus_queue_name 2>&1
+    if ($serviceBusQueueNameOutput -and -not ($serviceBusQueueNameOutput -match "Error|Warning|No outputs found")) {
+        $serviceBusQueueName = $serviceBusQueueNameOutput.Trim()
     }
 } catch {
     Write-Warning "Error al obtener outputs de Terraform: $($_.Exception.Message)"
@@ -135,6 +147,17 @@ Write-Host ""
 Write-Host "Generando archivo: $OutputFile" -ForegroundColor Yellow
 
 # Generar archivo .env
+$serviceBusSection = ""
+if ($serviceBusConnectionString -and $serviceBusQueueName) {
+    $serviceBusSection = @"
+
+# Configuracion de Azure Service Bus (para notificaciones)
+# Valores extraidos de Terraform outputs
+AZURE_SERVICE_BUS_CONNECTION_STRING=$serviceBusConnectionString
+AZURE_SERVICE_BUS_QUEUE_NAME=$serviceBusQueueName
+"@
+}
+
 $envContent = @"
 # Archivo generado de forma automatica desde Terraform outputs
 # Generado el: $(Get-Date -Format "yyyy-MM-dd HH:mm:ss")
@@ -153,6 +176,7 @@ DB_USERNAME=$username
 DB_PASSWORD=$password
 DB_DATABASE=$databaseName
 DB_ENCRYPT=true
+$serviceBusSection
 "@
 
 # Escribir con UTF-8 sin BOM para compatibilidad con archivos .env

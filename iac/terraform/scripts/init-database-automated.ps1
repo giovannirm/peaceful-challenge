@@ -100,6 +100,26 @@ if ([string]::IsNullOrWhiteSpace($databaseName)) {
 Write-Host "Servidor SQL: $serverFQDN" -ForegroundColor Green
 Write-Host "Base de datos: $databaseName" -ForegroundColor Green
 
+# Verificar conectividad con el servidor SQL antes de continuar
+Write-Host "`nVerificando conectividad con el servidor SQL..." -ForegroundColor Yellow
+try {
+    # Intentar hacer un DNS lookup para verificar que el hostname existe
+    $dnsResult = Resolve-DnsName -Name $serverFQDN -ErrorAction Stop -Type A
+    Write-Host "DNS resuelto correctamente: $($dnsResult[0].IPAddress)" -ForegroundColor Green
+} catch {
+    Write-Warning "No se pudo resolver el DNS del servidor SQL: $serverFQDN"
+    Write-Warning "Esto puede indicar que:"
+    Write-Warning "1. El servidor SQL no existe aún (ejecuta 'terraform apply' primero)"
+    Write-Warning "2. El nombre del servidor en .env.azure es incorrecto"
+    Write-Warning "3. Hay un problema de conectividad de red"
+    Write-Host ""
+    $continue = Read-Host "¿Deseas continuar de todas formas? (S/N)"
+    if ($continue -ne "S" -and $continue -ne "s") {
+        Write-Host "Operación cancelada. Ejecuta 'terraform apply' primero para crear el servidor SQL." -ForegroundColor Yellow
+        exit 0
+    }
+}
+
 # Obtener credenciales desde .env.azure, terraform.tfvars o solicitar al usuario
 $username = $null
 $password = $null
@@ -162,12 +182,60 @@ try {
     $null = Get-Command sqlcmd -ErrorAction Stop
 } catch {
     Write-Error "sqlcmd no esta instalado. Instala SQL Server Command Line Utilities desde: https://aka.ms/sqlcmdsetup"
+    Write-Error "O puedes inicializar la base de datos manualmente usando Azure Portal o Azure Data Studio."
     exit 1
 }
 
 Write-Host "`nEjecutando script de inicializacion..." -ForegroundColor Yellow
 
 try {
+    # Intentar conectar primero para verificar credenciales
+    Write-Host "Verificando conexión con el servidor..." -ForegroundColor Yellow
+    $testQuery = "SELECT 1 AS TestConnection"
+    $testResult = sqlcmd -S "$serverFQDN" `
+                         -d "$databaseName" `
+                         -U "$username" `
+                         -P "$password" `
+                         -Q "$testQuery" `
+                         -l 5 `
+                         -C `
+                         -b `
+                         -W `
+                         2>&1
+    
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host ""
+        Write-Host "========================================" -ForegroundColor Red
+        Write-Host "ERROR: No se pudo conectar al servidor SQL" -ForegroundColor Red
+        Write-Host "========================================" -ForegroundColor Red
+        Write-Host ""
+        Write-Host "Posibles causas:" -ForegroundColor Yellow
+        Write-Host "1. El servidor SQL no existe aún en Azure" -ForegroundColor White
+        Write-Host "   → Solución: Ejecuta 'terraform apply' primero para crear los recursos" -ForegroundColor Cyan
+        Write-Host ""
+        Write-Host "2. Las credenciales son incorrectas" -ForegroundColor White
+        Write-Host "   → Verifica el archivo .env.azure o terraform.tfvars" -ForegroundColor Cyan
+        Write-Host ""
+        Write-Host "3. Tu IP no está permitida en las reglas de firewall" -ForegroundColor White
+        Write-Host "   → Verifica las reglas de firewall en Azure Portal" -ForegroundColor Cyan
+        Write-Host "   → O ejecuta 'terraform apply' con tu IP actual configurada" -ForegroundColor Cyan
+        Write-Host ""
+        Write-Host "4. El servidor está en pausa (si es Serverless)" -ForegroundColor White
+        Write-Host "   → El servidor se activará automáticamente al conectarse" -ForegroundColor Cyan
+        Write-Host ""
+        Write-Host "Detalles del error:" -ForegroundColor Yellow
+        Write-Host $testResult -ForegroundColor Gray
+        Write-Host ""
+        Write-Host "Puedes inicializar la base de datos más tarde con:" -ForegroundColor Cyan
+        Write-Host "  cd iac/terraform" -ForegroundColor White
+        Write-Host "  .\scripts\init-database-automated.ps1" -ForegroundColor White
+        Write-Host ""
+        exit 1
+    }
+    
+    Write-Host "Conexión exitosa. Ejecutando script de inicialización..." -ForegroundColor Green
+    
+    # Ejecutar el script de inicialización
     sqlcmd -S "$serverFQDN" `
            -d "$databaseName" `
            -U "$username" `
@@ -186,10 +254,19 @@ try {
         Write-Host "DB_DATABASE=$databaseName" -ForegroundColor White
     } else {
         Write-Error "Error al ejecutar el script SQL. Codigo de salida: $LASTEXITCODE"
+        Write-Error "Verifica que el script SQL no tenga errores y que tengas permisos suficientes."
         exit 1
     }
 } catch {
     $errorMessage = $_.Exception.Message
     Write-Error "Error al ejecutar el script SQL: $errorMessage"
+    Write-Error ""
+    Write-Error "Posibles causas:"
+    Write-Error "1. El servidor SQL no existe o no es accesible"
+    Write-Error "2. Las credenciales son incorrectas"
+    Write-Error "3. Tu IP no está permitida en las reglas de firewall"
+    Write-Error "4. El servidor está en pausa (si es Serverless)"
+    Write-Error ""
+    Write-Error "Solución: Ejecuta 'terraform apply' primero para crear/verificar el servidor SQL."
     exit 1
 }

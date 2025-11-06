@@ -11,25 +11,32 @@ BEGIN
         id INT PRIMARY KEY IDENTITY(1,1),
         first_name VARCHAR(100) NOT NULL,
         last_name VARCHAR(100) NOT NULL,
-        document_number VARCHAR(20) NOT NULL UNIQUE
+        document_number VARCHAR(20) NOT NULL UNIQUE,
+        email VARCHAR(255) NULL
     );
     PRINT 'Tabla employees creada exitosamente';
 END
 ELSE
 BEGIN
     PRINT 'Tabla employees ya existe';
+    -- Agregar columna email si no existe
+    IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID('employees') AND name = 'email')
+    BEGIN
+        ALTER TABLE employees ADD email VARCHAR(255) NULL;
+        PRINT 'Columna email agregada a la tabla employees';
+    END
 END
 GO
 
 -- Insertar datos iniciales de empleados (solo si no existen)
 IF NOT EXISTS (SELECT 1 FROM employees WHERE document_number = '12345678')
 BEGIN
-    INSERT INTO employees (first_name, last_name, document_number) VALUES 
-    ('Juan', 'Pérez', '12345678'),
-    ('María', 'García', '87654321'),
-    ('Carlos', 'López', '11223344'),
-    ('Ana', 'Martínez', '55667788'),
-    ('Luis', 'Rodríguez', '99887766');
+    INSERT INTO employees (first_name, last_name, document_number, email) VALUES 
+    ('Juan', 'Pérez', '12345678', 'juan.perez@example.com'),
+    ('María', 'García', '87654321', 'maria.garcia@example.com'),
+    ('Carlos', 'López', '11223344', 'carlos.lopez@example.com'),
+    ('Ana', 'Martínez', '55667788', 'ana.martinez@example.com'),
+    ('Luis', 'Rodríguez', '99887766', 'luis.rodriguez@example.com');
     PRINT 'Datos de empleados insertados exitosamente';
 END
 ELSE

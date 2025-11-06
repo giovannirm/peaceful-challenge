@@ -1,7 +1,7 @@
 variable "resource_group_name" {
   description = "Nombre del grupo de recursos de Azure"
   type        = string
-  default     = "rg-peaceful-db"
+  default     = "rg-peaceful"
 }
 
 variable "location" {
@@ -72,5 +72,73 @@ variable "tags" {
     Project     = "peaceful"
     ManagedBy   = "terraform"
   }
+}
+
+# Service Bus Variables
+variable "service_bus_namespace_name" {
+  description = "Nombre base para el namespace de Service Bus (se le agregará un sufijo aleatorio)"
+  type        = string
+  default     = "sb-peaceful"
+}
+
+variable "service_bus_sku" {
+  description = "SKU del Service Bus (Basic, Standard, Premium)"
+  type        = string
+  default     = "Basic"
+}
+
+variable "service_bus_queue_name" {
+  description = "Nombre de la cola de Service Bus para notificaciones de tardanzas"
+  type        = string
+  default     = "late-checkin-notifications"
+}
+
+variable "service_bus_max_delivery_count" {
+  description = "Número máximo de intentos de entrega antes de mover el mensaje a la dead letter queue"
+  type        = number
+  default     = 10
+}
+
+variable "service_bus_default_message_ttl" {
+  description = "TTL por defecto para mensajes en la cola (en formato ISO 8601, ej: PT1H para 1 hora)"
+  type        = string
+  default     = "P1D" # 1 día
+}
+
+variable "service_bus_lock_duration" {
+  description = "Duración del lock de mensajes (en formato ISO 8601, ej: PT30S para 30 segundos)"
+  type        = string
+  default     = "PT1M" # 1 minuto
+}
+
+# Azure Function Variables
+variable "function_app_name" {
+  description = "Nombre base para la Function App (se le agregará un sufijo aleatorio)"
+  type        = string
+  default     = "func-peaceful-notifications"
+}
+
+variable "function_app_sku" {
+  description = "SKU del plan de App Service para la Function App (Y1 para Consumption, EP1 para Premium)"
+  type        = string
+  default     = "Y1" # Consumption Plan (pay-per-use)
+}
+
+variable "function_app_runtime" {
+  description = "Runtime de la Function App (node, python, dotnet, java)"
+  type        = string
+  default     = "node"
+}
+
+variable "function_app_node_version" {
+  description = "Versión de Node.js para la Function App (valores válidos: 12, 14, 16, 18, 20)"
+  type        = string
+  default     = "20"
+}
+
+variable "function_app_storage_account_name" {
+  description = "Nombre base para la cuenta de almacenamiento de la Function App (se le agregará un sufijo aleatorio)"
+  type        = string
+  default     = "stpeacefulfunc"
 }
 

@@ -1,6 +1,6 @@
 # Copia este archivo como terraform.tfvars y completa los valores
 
-resource_group_name = "rg-peaceful-db"
+resource_group_name = "rg-peaceful"
 location            = "westus2"
 
 # Credenciales de SQL Server (DEBEN ser seguras)

@@ -34,3 +34,42 @@ output "database_id" {
   value       = azurerm_mssql_database.main.id
 }
 
+# Service Bus Outputs
+output "service_bus_namespace_name" {
+  description = "Nombre del namespace de Service Bus"
+  value       = azurerm_servicebus_namespace.main.name
+}
+
+output "service_bus_namespace_fqdn" {
+  description = "FQDN del namespace de Service Bus"
+  value       = azurerm_servicebus_namespace.main.default_primary_connection_string
+  sensitive   = true
+}
+
+output "service_bus_connection_string" {
+  description = "Connection string del Service Bus"
+  value       = data.azurerm_servicebus_namespace_authorization_rule.main.primary_connection_string
+  sensitive   = true
+}
+
+output "service_bus_queue_name" {
+  description = "Nombre de la cola de notificaciones"
+  value       = azurerm_servicebus_queue.late_checkin_notifications.name
+}
+
+# Function App Outputs
+output "function_app_name" {
+  description = "Nombre de la Function App"
+  value       = azurerm_linux_function_app.notifications.name
+}
+
+output "function_app_default_hostname" {
+  description = "URL por defecto de la Function App"
+  value       = azurerm_linux_function_app.notifications.default_hostname
+}
+
+output "function_app_id" {
+  description = "ID de la Function App"
+  value       = azurerm_linux_function_app.notifications.id
+}
+

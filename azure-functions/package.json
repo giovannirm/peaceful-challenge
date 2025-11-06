@@ -1,0 +1,22 @@
+{
+  "name": "peaceful-notifications-function",
+  "version": "1.0.0",
+  "description": "Azure Function para procesar notificaciones de tardanzas",
+  "main": "dist/src/index.js",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "prestart": "npm run build",
+    "start": "func start",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@azure/functions": "^4.5.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.7.3",
+    "azure-functions-core-tools": "^4.0.5455"
+  }
+}
+
