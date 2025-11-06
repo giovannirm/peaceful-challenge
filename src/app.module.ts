@@ -1,8 +1,10 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { EmployeesModule } from './employees/employees.module';
-import { AttendanceModule } from './attendance/attendance.module';
+import { EmployeeModule } from './infrastructure/config/employee.module';
+import { AttendanceModule } from './infrastructure/config/attendance.module';
+import { EmployeeTypeOrmEntity } from './infrastructure/persistence/typeorm/entities/employee.typeorm.entity';
+import { AttendanceTypeOrmEntity } from './infrastructure/persistence/typeorm/entities/attendance.typeorm.entity';
 
 @Module({
   imports: [
@@ -16,14 +18,14 @@ import { AttendanceModule } from './attendance/attendance.module';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
-      entities: [__dirname + '/**/*.entity{.ts,.js}'],
+      entities: [EmployeeTypeOrmEntity, AttendanceTypeOrmEntity],
       synchronize: false,
       options: {
-        encrypt: true, // Cambiar a true si usas Azure SQL
+        encrypt: true,
         trustServerCertificate: true,
       },
     }),
-    EmployeesModule,
+    EmployeeModule,
     AttendanceModule,
   ],
 })

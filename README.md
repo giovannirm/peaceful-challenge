@@ -16,7 +16,7 @@ Para crear la infraestructura en Azure:
 
 1. Ve al directorio de Terraform:
    ```bash
-   cd infrastructure/terraform
+   cd iac/terraform
    ```
 
 2. Configura las variables:
@@ -45,4 +45,4 @@ Para crear la infraestructura en Azure:
    ./scripts/init-database-automated.sh
    ```
 
-Para más detalles, consulta el [README de Terraform](infrastructure/terraform/README.md).
+Para más detalles, consulta el [README de Terraform](iac/terraform/README.md).
