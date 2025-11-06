@@ -2,6 +2,8 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe, Logger } from '@nestjs/common';
 import { AppModule } from './app.module';
 import { AppConfigService } from './infrastructure/config/config.service';
+import { INFRASTRUCTURE_CONSTANTS } from './infrastructure/constants/app.constants';
+import { API_ROUTES } from './adapters/input/rest/routes.constants';
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
@@ -28,11 +30,14 @@ async function bootstrap() {
 
   await app.listen(port, host);
 
-  const protocol = nodeEnv === 'production' ? 'https' : 'http';
+  const protocol =
+    nodeEnv === INFRASTRUCTURE_CONSTANTS.ENVIRONMENT.PRODUCTION
+      ? INFRASTRUCTURE_CONSTANTS.PROTOCOL.HTTPS
+      : INFRASTRUCTURE_CONSTANTS.PROTOCOL.HTTP;
   const baseUrl = `${protocol}://${host}:${port}`;
 
   logger.log(`🚀 Application is running on: ${baseUrl}`);
   logger.log(`📝 Environment: ${nodeEnv}`);
-  logger.log(`🔍 Health check available at: ${baseUrl}/health`);
+  logger.log(`🔍 Health check available at: ${baseUrl}/${API_ROUTES.HEALTH}`);
 }
 bootstrap();

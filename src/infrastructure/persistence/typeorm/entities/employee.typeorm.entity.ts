@@ -8,10 +8,18 @@ export class EmployeeTypeOrmEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', length: 100, name: DATABASE.COLUMNS.EMPLOYEE.FIRST_NAME })
+  @Column({
+    type: 'varchar',
+    length: 100,
+    name: DATABASE.COLUMNS.EMPLOYEE.FIRST_NAME,
+  })
   firstName: string;
 
-  @Column({ type: 'varchar', length: 100, name: DATABASE.COLUMNS.EMPLOYEE.LAST_NAME })
+  @Column({
+    type: 'varchar',
+    length: 100,
+    name: DATABASE.COLUMNS.EMPLOYEE.LAST_NAME,
+  })
   lastName: string;
 
   @Column({
@@ -43,4 +51,3 @@ export class EmployeeTypeOrmEntity {
     return entity;
   }
 }
-

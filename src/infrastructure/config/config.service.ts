@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { INFRASTRUCTURE_CONSTANTS } from '../constants/app.constants';
 
 @Injectable()
 export class AppConfigService {
@@ -45,7 +46,10 @@ export class AppConfigService {
   }
 
   get host(): string {
-    return this.configService.get<string>('HOST', 'localhost');
+    return this.configService.get<string>(
+      'HOST',
+      INFRASTRUCTURE_CONSTANTS.HOST.LOCALHOST,
+    );
   }
 
   // Configuración de base de datos
@@ -70,13 +74,18 @@ export class AppConfigService {
   }
 
   get dbEncrypt(): boolean {
-    return this.configService.get<string>('DB_ENCRYPT', 'false') === 'true';
+    return (
+      this.configService.get<string>(
+        'DB_ENCRYPT',
+        INFRASTRUCTURE_CONSTANTS.BOOLEAN.FALSE,
+      ) === INFRASTRUCTURE_CONSTANTS.BOOLEAN.TRUE
+    );
   }
 
   // Método helper para obtener toda la configuración de TypeORM
   get typeOrmConfig() {
     return {
-      type: 'mssql' as const,
+      type: INFRASTRUCTURE_CONSTANTS.DATABASE.TYPE.MSSQL,
       host: this.dbHost,
       port: this.dbPort,
       username: this.dbUsername,
