@@ -36,11 +36,7 @@ lerna-debug.log*
 !.vscode/extensions.json
 
 # dotenv environment variable files
-.env
-.env.development.local
-.env.test.local
-.env.production.local
-.env.local
+.env*
 
 # temp directory
 .temp
@@ -66,3 +62,7 @@ override.tf
 override.tf.json
 *_override.tf
 *_override.tf.json
+
+# Docker
+docker-compose.override.yml
+.env.docker

@@ -1,9 +1,14 @@
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
+import { ValidationPipe, Logger } from '@nestjs/common';
 import { AppModule } from './app.module';
+import { AppConfigService } from './infrastructure/config/config.service';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const logger = new Logger('Bootstrap');
+
+  const app = await NestFactory.create(AppModule, {
+    logger: ['error', 'warn', 'log', 'debug', 'verbose'],
+  });
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -16,6 +21,18 @@ async function bootstrap() {
   // Habilitar CORS
   app.enableCors();
 
-  await app.listen(process.env.PORT ?? 3000);
+  const configService = app.get(AppConfigService);
+  const port = configService.port;
+  const host = configService.host;
+  const nodeEnv = configService.nodeEnv;
+
+  await app.listen(port, host);
+
+  const protocol = nodeEnv === 'production' ? 'https' : 'http';
+  const baseUrl = `${protocol}://${host}:${port}`;
+
+  logger.log(`🚀 Application is running on: ${baseUrl}`);
+  logger.log(`📝 Environment: ${nodeEnv}`);
+  logger.log(`🔍 Health check available at: ${baseUrl}/health`);
 }
 bootstrap();

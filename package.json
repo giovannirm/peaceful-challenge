@@ -8,7 +8,6 @@
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
@@ -17,7 +16,14 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "docker:up": "cd docker && docker-compose -f docker-compose.yml up --build -d",
+    "docker:down": "cd docker && docker-compose -f docker-compose.yml down",
+    "docker:logs": "cd docker && docker-compose -f docker-compose.yml logs -f",
+    "docker:clean": "cd docker && docker-compose -f docker-compose.yml down -v",
+    "generate-env": "cd iac/terraform && pwsh -File scripts/generate-env.ps1 . ..\\..\\.env.azure || cd iac/terraform && powershell -File scripts/generate-env.ps1 . ..\\..\\.env.azure",
+    "setup": "powershell -File scripts/setup.ps1",
+    "start": "npm run setup && npm run docker:up"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
@@ -27,6 +33,7 @@
     "@nestjs/typeorm": "^11.0.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
+    "joi": "^18.0.1",
     "mssql": "^11.0.1",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
@@ -40,6 +47,7 @@
     "@nestjs/testing": "^11.0.1",
     "@types/express": "^5.0.0",
     "@types/jest": "^30.0.0",
+    "@types/joi": "^17.2.2",
     "@types/node": "^22.10.7",
     "@types/supertest": "^6.0.2",
     "eslint": "^9.18.0",

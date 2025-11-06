@@ -13,8 +13,7 @@ iac/
 │   └── scripts/        # Scripts de inicialización
 │
 └── database/           # Scripts SQL
-    ├── init-azure.sql  # Script de inicialización para Azure SQL
-    └── init.sql        # Script de inicialización genérico
+    └── init.sql        # Script de inicialización unificado (compatible con Docker y Azure)
 ```
 
 ## Terraform
@@ -45,10 +44,12 @@ Para más detalles, consulta [terraform/README.md](terraform/README.md).
 
 ## Scripts de Base de Datos
 
-Los scripts SQL están organizados por base de datos o proveedor:
+### Script de Inicialización
 
-- `init-azure.sql`: Script específico para Azure SQL Database
-- `init.sql`: Script genérico (puede requerir ajustes según el proveedor)
+El proyecto usa un único script SQL unificado (`init.sql`) que funciona tanto en Docker como en Azure SQL Database:
+
+- **Para Docker**: El script se ejecuta automáticamente por el servicio `db-init` después de crear la base de datos
+- **Para Azure SQL**: El script se ejecuta manualmente después de `terraform apply` (Terraform ya crea la base de datos)
 
 ### Ejecución
 
@@ -62,7 +63,7 @@ cd terraform
 O manualmente:
 
 ```bash
-sqlcmd -S <server-fqdn> -d <database> -U <username> -P <password> -i ../database/init-azure.sql
+sqlcmd -S <server-fqdn> -d <database> -U <username> -P <password> -i ../database/init.sql
 ```
 
 ## Organización según Arquitectura Hexagonal

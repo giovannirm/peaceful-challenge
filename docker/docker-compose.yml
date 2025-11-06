@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  # Aplicación NestJS
+  # Se conecta a Azure SQL Database usando las variables de entorno del archivo .env
+  app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      target: production
+    container_name: peaceful-app
+    env_file:
+      - ../.env
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/health', (r) => {r.on('data', () => {}); r.on('end', () => process.exit(r.statusCode === 200 ? 0 : 1))})"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+networks:
+  peaceful-network:
+    driver: bridge
+

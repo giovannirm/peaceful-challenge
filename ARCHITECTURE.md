@@ -73,8 +73,7 @@ project-root/
 │   │       ├── init-database-automated.sh
 │   │       └── init-database-automated.ps1
 │   └── database/                   # Scripts SQL de inicialización
-│       ├── init-azure.sql
-│       └── init.sql
+│       └── init.sql                # Script unificado (compatible con Docker y Azure)
 │
 ├── test/                           # Tests E2E
 └── [archivos de configuración del proyecto]

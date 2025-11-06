@@ -1,12 +1,12 @@
 #!/bin/bash
 
-# Script Bash automatizado para ejecutar init-azure.sql después de Terraform
+# Script Bash automatizado para ejecutar init.sql después de Terraform
 # Este script lee los outputs de Terraform y ejecuta el script SQL automáticamente
 
 set -e
 
 TERRAFORM_DIR="${1:-.}"
-SQL_FILE="${2:-../database/init-azure.sql}"
+SQL_FILE="${2:-../database/init.sql}"
 
 echo "=== Inicialización Automática de Base de Datos ==="
 

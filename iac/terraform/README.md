@@ -29,6 +29,11 @@ Esta configuración de Terraform crea una instancia de Azure SQL Database para e
    - `sql_admin_username`: Nombre de usuario para SQL Server
    - `sql_admin_password`: Contraseña segura (mínimo 8 caracteres, mayúsculas, minúsculas, números y caracteres especiales)
    - `client_ip_address`: (Opcional) Tu IP pública para permitir acceso directo
+   
+   **⚠️ IMPORTANTE**: Las credenciales configuradas aquí (`sql_admin_username` y `sql_admin_password`) 
+   deben ser las mismas que uses en las variables de entorno de la aplicación:
+   - `DB_USERNAME` debe coincidir con `sql_admin_username`
+   - `DB_PASSWORD` debe coincidir con `sql_admin_password`
 
 3. **Inicializa Terraform:**
    ```bash
@@ -40,18 +45,53 @@ Esta configuración de Terraform crea una instancia de Azure SQL Database para e
    terraform plan
    ```
 
-5. **Aplica la configuración:**
+5. **Aplica la configuración y genera el `.env` automáticamente:**
+   
+   **Opción 1: Usando scripts (más fácil)**
+   ```powershell
+   # Desde la raíz del proyecto
+   terraform apply
+   cd ../..
+   .\scripts.ps1 generate-env
+   # O
+   npm run generate-env
+   ```
+   
+   Esto ejecutará `terraform apply` y luego generará automáticamente el archivo `.env.azure`.
+   
+   **Opción 2: Manualmente**
    ```bash
    terraform apply
    ```
-
+   
    Esto creará:
    - Un Resource Group
    - Un SQL Server
    - Una SQL Database
    - Reglas de firewall necesarias
+   
+   Luego genera el `.env`:
+   ```powershell
+   # Desde la raíz del proyecto
+   .\scripts.ps1 generate-env
+   # O
+   npm run generate-env
+   
+   # O desde este directorio:
+   .\scripts\generate-env.ps1
+   ```
+   
+   Esto generará un archivo `.env.azure` en la raíz del proyecto con todas las variables necesarias.
+   
+   **Opción 3: Ver outputs manualmente**
+   ```bash
+   terraform output sql_server_fqdn
+   terraform output database_name
+   ```
+   
+   Luego crea tu archivo `.env` manualmente con estos valores.
 
-6. **Inicializa la base de datos con el esquema:**
+7. **Inicializa la base de datos con el esquema:**
    
    Después de que Terraform complete la creación, ejecuta el script de inicialización:
 
@@ -62,7 +102,7 @@ Esta configuración de Terraform crea una instancia de Azure SQL Database para e
      -DatabaseName "peaceful_db" `
      -Username "<admin-username>" `
      -Password "<admin-password>" `
-     -SqlFile "../database/init-azure.sql"
+     -SqlFile "../database/init.sql"
    ```
 
    **Linux/Mac (Bash):**
@@ -73,7 +113,7 @@ Esta configuración de Terraform crea una instancia de Azure SQL Database para e
      "peaceful_db" \
      "<admin-username>" \
      "<admin-password>" \
-     "../database/init-azure.sql"
+     "../database/init.sql"
    ```
 
    O puedes obtener los valores desde los outputs de Terraform:
@@ -83,19 +123,34 @@ Esta configuración de Terraform crea una instancia de Azure SQL Database para e
 
 ## Variables de Entorno para la Aplicación
 
-Después de crear la infraestructura, configura las siguientes variables de entorno en tu aplicación:
+Después de crear la infraestructura, **la forma más fácil** es usar el script de generación automática:
 
-```env
-DB_HOST=<sql-server-fqdn>
-DB_PORT=1433
-DB_USERNAME=<admin-username>
-DB_PASSWORD=<admin-password>
-DB_DATABASE=peaceful_db
+```powershell
+# Desde la raíz del proyecto
+.\scripts.ps1 generate-env
+# O
+npm run generate-env
+
+# O desde este directorio:
+.\scripts\generate-env.ps1
 ```
 
-Puedes obtener el `DB_HOST` con:
-```bash
-terraform output sql_server_fqdn
+Esto creará un archivo `.env.azure` con todas las variables correctas. Luego puedes copiarlo:
+```powershell
+Copy-Item .env.azure .env
+```
+
+**O manualmente**, configura las siguientes variables de entorno:
+
+**⚠️ IMPORTANTE**: Las credenciales (`DB_USERNAME` y `DB_PASSWORD`) **DEBEN coincidir** con las configuradas en `terraform.tfvars`:
+
+```env
+DB_HOST=<sql-server-fqdn>  # Obtener con: terraform output sql_server_fqdn
+DB_PORT=1433
+DB_USERNAME=sqladmin  # DEBE ser igual a sql_admin_username en terraform.tfvars
+DB_PASSWORD=TuContraseñaSegura123!@#  # DEBE ser igual a sql_admin_password en terraform.tfvars
+DB_DATABASE=peaceful_db  # Obtener con: terraform output database_name
+DB_ENCRYPT=true
 ```
 
 ## Outputs
@@ -136,7 +191,7 @@ terraform destroy
 - Verifica que las reglas de firewall estén configuradas correctamente
 - Asegúrate de que tu IP esté permitida si intentas conectarte desde fuera de Azure
 
-### Error al ejecutar init-azure.sql
+### Error al ejecutar init.sql
 - Verifica que sqlcmd esté instalado y en el PATH
 - Asegúrate de que la contraseña no contenga caracteres especiales que requieran escape
 - Verifica que el servidor SQL esté completamente provisionado antes de ejecutar el script

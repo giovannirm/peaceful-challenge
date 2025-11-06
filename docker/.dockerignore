@@ -1,0 +1,55 @@
+# Dependencies
+node_modules
+npm-debug.log
+package-lock.json
+
+# Build
+dist
+build
+*.tsbuildinfo
+
+# Testing
+coverage
+.nyc_output
+*.spec.ts
+*.e2e-spec.ts
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Documentation
+*.md
+!README.md
+
+# Infrastructure (mantener scripts SQL para Docker)
+iac/terraform
+terraform.tfstate
+terraform.tfstate.backup
+*.tfplan
+
+# Logs
+logs
+*.log
+
+# Misc
+.eslintcache
+.cache
+

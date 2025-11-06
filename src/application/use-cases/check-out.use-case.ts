@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException, Inject } from '@nestjs/common';
 import { Attendance } from '../../domain/entities/attendance.entity';
 import { AttendanceType } from '../../domain/value-objects/attendance-type.vo';
-import { IEmployeeRepository } from '../../ports/output/employee.repository.port';
-import { IAttendanceRepository } from '../../ports/output/attendance.repository.port';
+import type { IEmployeeRepository } from '../../ports/output/employee.repository.port';
+import type { IAttendanceRepository } from '../../ports/output/attendance.repository.port';
 import { CreateAttendanceDto } from '../dto/create-attendance.dto';
 import { DEPENDENCY_INJECTION_TOKENS } from '../../infrastructure/config/dependency-injection.tokens';
 import { ERROR_MESSAGES } from '../../domain/constants/error-messages.constants';
