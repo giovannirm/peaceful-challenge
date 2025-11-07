@@ -13,10 +13,8 @@ import type { INotificationQueue } from '@attendance/domain/ports/notification.q
 import { CheckInDto } from '@attendance/application/dto/check-in.dto';
 import { DEPENDENCY_INJECTION_TOKENS } from '@shared/application/config/dependency-injection.tokens';
 import { ERROR_MESSAGES } from '@shared/domain/constants/error-messages.constants';
-import {
-  DuplicateCheckInException,
-} from '@attendance/domain/exceptions/attendance.exception';
-import { AttendanceValidatorService } from '@attendance/domain/services/attendance-validator.service';
+import { DuplicateCheckInException } from '@attendance/domain/exceptions/attendance.exception';
+import type { IAttendanceValidator } from '@attendance/domain/ports/attendance-validator.port';
 
 @Injectable()
 export class CheckInUseCase {
@@ -29,6 +27,8 @@ export class CheckInUseCase {
     private readonly attendanceRepository: IAttendanceRepository,
     @Inject(DEPENDENCY_INJECTION_TOKENS.NOTIFICATION_QUEUE)
     private readonly notificationQueue: INotificationQueue,
+    @Inject(DEPENDENCY_INJECTION_TOKENS.ATTENDANCE_VALIDATOR)
+    private readonly attendanceValidator: IAttendanceValidator,
   ) {}
 
   async execute(checkInDto: CheckInDto): Promise<Attendance> {
@@ -42,9 +42,7 @@ export class CheckInUseCase {
     );
 
     if (!employee) {
-      this.logger.warn(
-        `Empleado no encontrado: ${checkInDto.employeeId}`,
-      );
+      this.logger.warn(`Empleado no encontrado: ${checkInDto.employeeId}`);
       throw new NotFoundException(
         ERROR_MESSAGES.EMPLOYEE_NOT_FOUND(checkInDto.employeeId),
       );
@@ -84,10 +82,10 @@ export class CheckInUseCase {
     const savedAttendance = await this.attendanceRepository.save(attendance);
 
     // Verificar si es tardío (más de 1 hora después de la hora de inicio)
-    const isLate = AttendanceValidatorService.isLateCheckIn(recordTime);
+    const isLate = this.attendanceValidator.isLateCheckIn(recordTime);
     if (isLate) {
       const lateMinutes =
-        AttendanceValidatorService.calculateLateMinutes(recordTime);
+        this.attendanceValidator.calculateLateMinutes(recordTime);
       this.logger.warn(
         `Check-in tardío detectado para empleado ${checkInDto.employeeId}: ${lateMinutes} minutos de tardanza`,
       );
@@ -126,5 +124,3 @@ export class CheckInUseCase {
     return savedAttendance;
   }
 }
-
-

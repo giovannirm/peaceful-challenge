@@ -14,6 +14,8 @@ import { INotificationQueue } from '@attendance/domain/ports/notification.queue.
 import { MockNotificationQueue } from '@attendance/infrastructure/queues/mock-notification.queue';
 import { AzureServiceBusNotificationQueue } from '@attendance/infrastructure/queues/azure-service-bus-notification.queue';
 import { AppConfigService } from '@shared/infrastructure/config/config.service';
+import { IAttendanceValidator } from '@attendance/domain/ports/attendance-validator.port';
+import { AttendanceValidatorService } from '@attendance/domain/services/attendance-validator.service';
 
 @Module({
   imports: [
@@ -43,6 +45,10 @@ import { AppConfigService } from '@shared/infrastructure/config/config.service';
         return new MockNotificationQueue();
       },
       inject: [AppConfigService],
+    },
+    {
+      provide: DEPENDENCY_INJECTION_TOKENS.ATTENDANCE_VALIDATOR,
+      useClass: AttendanceValidatorService,
     },
   ],
 })

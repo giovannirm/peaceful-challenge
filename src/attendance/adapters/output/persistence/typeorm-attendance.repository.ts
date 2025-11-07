@@ -1,11 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Between, LessThanOrEqual, MoreThanOrEqual } from 'typeorm';
+import { Repository, Between } from 'typeorm';
 import { Attendance } from '@attendance/domain/entities/attendance.entity';
 import { IAttendanceRepository } from '@attendance/domain/ports/attendance.repository.port';
 import { AttendanceTypeOrmEntity } from '@attendance/infrastructure/persistence/typeorm/entities/attendance.typeorm.entity';
 import { AttendanceMapper } from '@attendance/infrastructure/persistence/mappers/attendance.mapper';
 import { AttendanceType } from '@shared/domain/value-objects/attendance-type.vo';
+import {
+  QUERY_ORDER,
+  ORDER_BY_FIELDS,
+} from '@shared/infrastructure/persistence/constants/query-order.constants';
 
 @Injectable()
 export class TypeOrmAttendanceRepository implements IAttendanceRepository {
@@ -24,7 +28,7 @@ export class TypeOrmAttendanceRepository implements IAttendanceRepository {
   async findByEmployeeId(employeeId: number): Promise<Attendance[]> {
     const entities = await this.repository.find({
       where: { employeeId },
-      order: { recordTime: 'DESC' },
+      order: { [ORDER_BY_FIELDS.RECORD_TIME]: QUERY_ORDER.DESC },
     });
     return entities.map((entity) => AttendanceMapper.toDomain(entity));
   }
@@ -45,7 +49,7 @@ export class TypeOrmAttendanceRepository implements IAttendanceRepository {
         type,
         recordTime: Between(startOfDay, endOfDay),
       },
-      order: { recordTime: 'DESC' },
+      order: { [ORDER_BY_FIELDS.RECORD_TIME]: QUERY_ORDER.DESC },
     });
 
     return entity ? AttendanceMapper.toDomain(entity) : null;
@@ -66,7 +70,7 @@ export class TypeOrmAttendanceRepository implements IAttendanceRepository {
         employeeId,
         recordTime: Between(start, end),
       },
-      order: { recordTime: 'ASC' },
+      order: { [ORDER_BY_FIELDS.RECORD_TIME]: QUERY_ORDER.ASC },
     });
 
     return entities.map((entity) => AttendanceMapper.toDomain(entity));
@@ -86,10 +90,9 @@ export class TypeOrmAttendanceRepository implements IAttendanceRepository {
         employeeId,
         recordTime: Between(startOfDay, endOfDay),
       },
-      order: { recordTime: 'ASC' },
+      order: { [ORDER_BY_FIELDS.RECORD_TIME]: QUERY_ORDER.ASC },
     });
 
     return entities.map((entity) => AttendanceMapper.toDomain(entity));
   }
 }
-

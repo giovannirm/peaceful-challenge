@@ -193,6 +193,7 @@ resource "azurerm_linux_function_app" "notifications" {
 
   app_settings = {
     FUNCTIONS_WORKER_RUNTIME       = var.function_app_runtime
+    FUNCTIONS_EXTENSION_VERSION    = "~4"
     AzureWebJobsStorage            = azurerm_storage_account.function_app.primary_connection_string
     SERVICE_BUS_CONNECTION_STRING  = data.azurerm_servicebus_namespace_authorization_rule.main.primary_connection_string
     SERVICE_BUS_QUEUE_NAME         = var.service_bus_queue_name

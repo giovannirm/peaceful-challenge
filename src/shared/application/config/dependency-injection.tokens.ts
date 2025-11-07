@@ -7,5 +7,6 @@ export const DEPENDENCY_INJECTION_TOKENS = {
   EMPLOYEE_REPOSITORY: 'IEmployeeRepository',
   ATTENDANCE_REPOSITORY: 'IAttendanceRepository',
   NOTIFICATION_QUEUE: 'INotificationQueue',
+  ATTENDANCE_VALIDATOR: 'IAttendanceValidator',
 } as const;
 

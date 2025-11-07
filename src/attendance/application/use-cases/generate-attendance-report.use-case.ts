@@ -14,7 +14,7 @@ import {
   AttendanceReportDto,
   DayAttendanceDto,
 } from '@attendance/application/dto/attendance-report.dto';
-import { AttendanceValidatorService } from '@attendance/domain/services/attendance-validator.service';
+import type { IAttendanceValidator } from '@attendance/domain/ports/attendance-validator.port';
 import { DATE_FORMAT } from '@shared/domain/constants/date-format.constants';
 
 @Injectable()
@@ -26,6 +26,8 @@ export class GenerateAttendanceReportUseCase {
     private readonly employeeRepository: IEmployeeRepository,
     @Inject(DEPENDENCY_INJECTION_TOKENS.ATTENDANCE_REPOSITORY)
     private readonly attendanceRepository: IAttendanceRepository,
+    @Inject(DEPENDENCY_INJECTION_TOKENS.ATTENDANCE_VALIDATOR)
+    private readonly attendanceValidator: IAttendanceValidator,
   ) {}
 
   async execute(
@@ -46,9 +48,7 @@ export class GenerateAttendanceReportUseCase {
 
     // Validar rango de fechas
     if (startDate > endDate) {
-      throw new BadRequestException(
-        'La fecha de inicio debe ser anterior a la fecha de fin',
-      );
+      throw new BadRequestException(ERROR_MESSAGES.INVALID_DATE_RANGE);
     }
 
     // Obtener todas las asistencias en el rango de fechas
@@ -118,8 +118,8 @@ export class GenerateAttendanceReportUseCase {
     day: Date,
     attendances: import('@attendance/domain/entities/attendance.entity').Attendance[],
   ): DayAttendanceDto {
-    const dayStart = AttendanceValidatorService.getStartOfDay(day);
-    const dayEnd = AttendanceValidatorService.getEndOfDay(day);
+    const dayStart = this.attendanceValidator.getStartOfDay(day);
+    const dayEnd = this.attendanceValidator.getEndOfDay(day);
 
     // Filtrar asistencias del día
     const dayAttendances = attendances.filter((attendance) => {
@@ -142,9 +142,9 @@ export class GenerateAttendanceReportUseCase {
     let lateMinutes = 0;
 
     if (checkIn) {
-      isLate = AttendanceValidatorService.isLateCheckIn(checkIn.recordTime);
+      isLate = this.attendanceValidator.isLateCheckIn(checkIn.recordTime);
       if (isLate) {
-        lateMinutes = AttendanceValidatorService.calculateLateMinutes(
+        lateMinutes = this.attendanceValidator.calculateLateMinutes(
           checkIn.recordTime,
         );
       }

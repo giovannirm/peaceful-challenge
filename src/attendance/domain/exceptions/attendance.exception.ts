@@ -1,13 +1,12 @@
 import { DomainException } from '@shared/domain/exceptions/domain.exception';
+import { ERROR_MESSAGES } from '@shared/domain/constants/error-messages.constants';
 
 /**
  * Excepción lanzada cuando un empleado intenta hacer check-in pero ya tiene uno registrado el mismo día
  */
 export class DuplicateCheckInException extends DomainException {
   constructor(employeeId: number, date: Date) {
-    super(
-      `El empleado con ID ${employeeId} ya tiene un registro de entrada para el día ${date.toLocaleDateString()}`,
-    );
+    super(ERROR_MESSAGES.DUPLICATE_CHECK_IN(employeeId, date));
   }
 }
 
@@ -16,9 +15,7 @@ export class DuplicateCheckInException extends DomainException {
  */
 export class MissingCheckInException extends DomainException {
   constructor(employeeId: number, date: Date) {
-    super(
-      `El empleado con ID ${employeeId} no tiene un registro de entrada para el día ${date.toLocaleDateString()}`,
-    );
+    super(ERROR_MESSAGES.MISSING_CHECK_IN(employeeId, date));
   }
 }
 
@@ -27,9 +24,7 @@ export class MissingCheckInException extends DomainException {
  */
 export class DuplicateCheckOutException extends DomainException {
   constructor(employeeId: number, date: Date) {
-    super(
-      `El empleado con ID ${employeeId} ya tiene un registro de salida para el día ${date.toLocaleDateString()}`,
-    );
+    super(ERROR_MESSAGES.DUPLICATE_CHECK_OUT(employeeId, date));
   }
 }
 

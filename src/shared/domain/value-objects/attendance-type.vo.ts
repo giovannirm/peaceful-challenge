@@ -1,3 +1,5 @@
+import { ERROR_MESSAGES } from '@shared/domain/constants/error-messages.constants';
+
 export enum AttendanceType {
   CHECK_IN = 'check_in',
   CHECK_OUT = 'check_out',
@@ -6,7 +8,7 @@ export enum AttendanceType {
 export class AttendanceTypeVO {
   constructor(private readonly value: AttendanceType) {
     if (!Object.values(AttendanceType).includes(value)) {
-      throw new Error(`Invalid attendance type: ${value}`);
+      throw new Error(ERROR_MESSAGES.INVALID_ATTENDANCE_TYPE(value));
     }
   }
 

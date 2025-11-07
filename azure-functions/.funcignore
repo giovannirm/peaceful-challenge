@@ -4,7 +4,6 @@
 .vscode
 local.settings.json
 test
-dist
 node_modules
 *.md
 

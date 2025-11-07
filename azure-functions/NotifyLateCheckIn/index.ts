@@ -1,11 +1,7 @@
-import {
-  app,
-  ServiceBusQueueFunctionOptions,
-  InvocationContext,
-} from '@azure/functions';
-import { EmailService } from './services/email.service';
-import { EMAIL_CONSTANTS } from './constants/email.constants';
-import { ERROR_MESSAGES } from './constants/error-messages.constants';
+import { AzureFunction, Context } from '@azure/functions';
+import { EmailService } from '../shared/services/email.service';
+import { EMAIL_CONSTANTS } from '../shared/constants/email.constants';
+import { ERROR_MESSAGES } from '../shared/constants/error-messages.constants';
 
 interface LateCheckInNotificationMessage {
   employeeId: number;
@@ -18,47 +14,43 @@ interface LateCheckInNotificationMessage {
 /**
  * Azure Function que procesa notificaciones de tardanzas desde Service Bus
  * Esta función se activa cuando se recibe un mensaje en la cola de Service Bus
- * Similar a AWS Lambda - toda la lógica en un solo archivo
  */
-app.serviceBusQueue('NotifyLateCheckIn', {
-  connection: 'SERVICE_BUS_CONNECTION_STRING',
-  queueName: '%SERVICE_BUS_QUEUE_NAME%',
-  handler: async (
-    message: LateCheckInNotificationMessage,
-    context: InvocationContext,
-  ): Promise<void> => {
-    context.log(
-      `Procesando notificación de tardanza para empleado ${message.employeeId}`,
-    );
+const serviceBusQueueTrigger: AzureFunction = async function (
+  context: Context,
+  message: LateCheckInNotificationMessage,
+): Promise<void> {
+  context.log(
+    `Procesando notificación de tardanza para empleado ${message.employeeId}`,
+  );
 
-    try {
-      // Validar que el mensaje tenga todos los campos requeridos
-      if (
-        !message.employeeId ||
-        !message.employeeEmail ||
-        !message.employeeName ||
-        !message.checkInTime ||
-        message.lateMinutes === undefined
-      ) {
-        throw new Error(ERROR_MESSAGES.INVALID_MESSAGE);
-      }
+  try {
+    // Validar que el mensaje tenga todos los campos requeridos
+    if (
+      !message.employeeId ||
+      !message.employeeEmail ||
+      !message.employeeName ||
+      !message.checkInTime ||
+      message.lateMinutes === undefined
+    ) {
+      throw new Error(ERROR_MESSAGES.INVALID_MESSAGE);
+    }
 
-      // Preparar el contenido del email
-      const checkInDate = new Date(message.checkInTime);
-      const emailSubject = `Notificación de Tardanza - ${message.employeeName}`;
+    // Preparar el contenido del email
+    const checkInDate = new Date(message.checkInTime);
+    const emailSubject = `Notificación de Tardanza - ${message.employeeName}`;
 
-      const emailText = `
+    const emailText = `
 Estimado/a ${message.employeeName},
 
 Le informamos que se ha registrado una tardanza en su entrada del día ${checkInDate.toLocaleDateString(
-        EMAIL_CONSTANTS.LOCALE.ES_ES,
-        {
-          weekday: EMAIL_CONSTANTS.DATE_FORMAT.WEEKDAY,
-          year: EMAIL_CONSTANTS.DATE_FORMAT.YEAR,
-          month: EMAIL_CONSTANTS.DATE_FORMAT.MONTH,
-          day: EMAIL_CONSTANTS.DATE_FORMAT.DAY,
-        },
-      )}.
+      EMAIL_CONSTANTS.LOCALE.ES_ES,
+      {
+        weekday: EMAIL_CONSTANTS.DATE_FORMAT.WEEKDAY,
+        year: EMAIL_CONSTANTS.DATE_FORMAT.YEAR,
+        month: EMAIL_CONSTANTS.DATE_FORMAT.MONTH,
+        day: EMAIL_CONSTANTS.DATE_FORMAT.DAY,
+      },
+    )}.
 
 Detalles:
 - Hora de entrada registrada: ${checkInDate.toLocaleTimeString(EMAIL_CONSTANTS.LOCALE.ES_ES)}
@@ -69,10 +61,10 @@ Por favor, justifique su tardanza según los procedimientos establecidos en la e
 
 Saludos cordiales,
 Sistema de Control de Asistencia
-      `.trim();
+    `.trim();
 
-      // Generar versión HTML del correo
-      const emailHtml = `
+    // Generar versión HTML del correo
+    const emailHtml = `
 <!DOCTYPE html>
 <html>
 <head>
@@ -120,30 +112,30 @@ Sistema de Control de Asistencia
   </div>
 </body>
 </html>
-      `.trim();
+    `.trim();
 
-      // Enviar correo usando nodemailer
-      context.log(`Enviando correo a ${message.employeeEmail}...`);
+    // Enviar correo usando nodemailer
+    context.log(`Enviando correo a ${message.employeeEmail}...`);
 
-      const emailService = new EmailService();
-      await emailService.sendEmail(
-        message.employeeEmail,
-        emailSubject,
-        emailText,
-        emailHtml,
-      );
+    const emailService = new EmailService();
+    await emailService.sendEmail(
+      message.employeeEmail,
+      emailSubject,
+      emailText,
+      emailHtml,
+    );
 
-      context.log(`Correo enviado exitosamente a ${message.employeeEmail}`);
+    context.log(`Correo enviado exitosamente a ${message.employeeEmail}`);
 
-      context.log(
-        `Notificación de tardanza procesada exitosamente para empleado ${message.employeeId}`,
-      );
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
-      context.error(ERROR_MESSAGES.PROCESSING_FAILED(errorMessage));
-      // El mensaje se moverá a la dead letter queue si falla después de los reintentos
-      throw error;
-    }
-  },
-} as ServiceBusQueueFunctionOptions);
+    context.log(
+      `Notificación de tardanza procesada exitosamente para empleado ${message.employeeId}`,
+    );
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    context.log.error(ERROR_MESSAGES.PROCESSING_FAILED(errorMessage));
+    // El mensaje se moverá a la dead letter queue si falla después de los reintentos
+    throw error;
+  }
+};
+
+export default serviceBusQueueTrigger;

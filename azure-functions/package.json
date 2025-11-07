@@ -2,7 +2,8 @@
   "name": "peaceful-notifications-function",
   "version": "1.0.0",
   "description": "Azure Function para procesar notificaciones de tardanzas",
-  "main": "dist/src/index.js",
+  "main": "dist/NotifyLateCheckIn/index.js",
+  "type": "commonjs",
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
@@ -11,14 +12,13 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "@azure/functions": "^4.5.1",
+    "@azure/functions": "^3.5.1",
     "nodemailer": "^6.9.8"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
     "@types/nodemailer": "^6.4.14",
-    "typescript": "^5.7.3",
-    "azure-functions-core-tools": "^4.0.5455"
+    "azure-functions-core-tools": "^4.0.5455",
+    "typescript": "^5.7.3"
   }
 }
-

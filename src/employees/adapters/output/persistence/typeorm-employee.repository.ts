@@ -4,6 +4,10 @@ import { Repository } from 'typeorm';
 import { Employee } from '@employees/domain/entities/employee.entity';
 import { IEmployeeRepository } from '@employees/domain/ports/employee.repository.port';
 import { EmployeeTypeOrmEntity } from '@employees/infrastructure/persistence/typeorm/entities/employee.typeorm.entity';
+import {
+  QUERY_ORDER,
+  ORDER_BY_FIELDS,
+} from '@shared/infrastructure/persistence/constants/query-order.constants';
 
 @Injectable()
 export class TypeOrmEmployeeRepository implements IEmployeeRepository {
@@ -30,7 +34,7 @@ export class TypeOrmEmployeeRepository implements IEmployeeRepository {
 
   async findAll(): Promise<Employee[]> {
     const entities = await this.repository.find({
-      order: { id: 'ASC' },
+      order: { [ORDER_BY_FIELDS.ID]: QUERY_ORDER.ASC },
     });
     return entities.map((entity) => EmployeeTypeOrmEntity.toDomain(entity));
   }

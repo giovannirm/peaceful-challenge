@@ -27,7 +27,10 @@ import { AttendanceResponseDto } from '@attendance/application/dto/attendance-re
 import { AttendanceReportDto } from '@attendance/application/dto/attendance-report.dto';
 import { AttendanceResponseMapper } from './attendance-response.mapper';
 import { API_ROUTES } from '@shared/adapters/input/rest/routes.constants';
-import { SWAGGER_CONSTANTS, API_VERSIONING } from '@shared/adapters/input/rest/swagger.constants';
+import {
+  SWAGGER_CONSTANTS,
+  API_VERSIONING,
+} from '@shared/adapters/input/rest/swagger.constants';
 import { QUERY_PARAMS } from '@shared/adapters/input/rest/query-params.constants';
 import { ERROR_MESSAGES } from '@shared/domain/constants/error-messages.constants';
 

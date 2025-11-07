@@ -1,61 +1,41 @@
-import { AttendanceType } from '@shared/domain/value-objects/attendance-type.vo';
 import { BUSINESS_CONSTANTS } from '@shared/domain/constants/business.constants';
+import { IAttendanceValidator } from '@attendance/domain/ports/attendance-validator.port';
 
 /**
  * Servicio de dominio para validaciones de asistencia
+ * Implementa el puerto IAttendanceValidator siguiendo el principio de inversión de dependencias
  */
-export class AttendanceValidatorService {
+export class AttendanceValidatorService implements IAttendanceValidator {
   /**
    * Calcula si un check-in es tardío (más de 1 hora después de la hora de inicio)
    */
-  static isLateCheckIn(checkInTime: Date): boolean {
-    const workStartTime = new Date(checkInTime);
-    workStartTime.setHours(
-      BUSINESS_CONSTANTS.WORK_SCHEDULE.START_HOUR,
-      BUSINESS_CONSTANTS.WORK_SCHEDULE.START_MINUTE,
-      0,
-      0,
-    );
-
-    const lateThreshold = new Date(workStartTime);
-    lateThreshold.setHours(
-      lateThreshold.getHours() +
-        BUSINESS_CONSTANTS.WORK_SCHEDULE.LATE_THRESHOLD_HOURS,
-    );
-
+  isLateCheckIn(checkInTime: Date): boolean {
+    const workStartTime = this.getWorkStartTime(checkInTime);
+    const lateThreshold = this.getLateThreshold(workStartTime);
     return checkInTime > lateThreshold;
   }
 
   /**
    * Calcula los minutos de tardanza
    */
-  static calculateLateMinutes(checkInTime: Date): number {
-    const workStartTime = new Date(checkInTime);
-    workStartTime.setHours(
-      BUSINESS_CONSTANTS.WORK_SCHEDULE.START_HOUR,
-      BUSINESS_CONSTANTS.WORK_SCHEDULE.START_MINUTE,
-      0,
-      0,
-    );
-
-    const lateThreshold = new Date(workStartTime);
-    lateThreshold.setHours(
-      lateThreshold.getHours() +
-        BUSINESS_CONSTANTS.WORK_SCHEDULE.LATE_THRESHOLD_HOURS,
-    );
+  calculateLateMinutes(checkInTime: Date): number {
+    const workStartTime = this.getWorkStartTime(checkInTime);
+    const lateThreshold = this.getLateThreshold(workStartTime);
 
     if (checkInTime <= lateThreshold) {
       return 0;
     }
 
     const diffMs = checkInTime.getTime() - lateThreshold.getTime();
-    return Math.floor(diffMs / (1000 * 60)); // Convertir a minutos
+    return Math.floor(
+      diffMs / BUSINESS_CONSTANTS.TIME_CONVERSION.MILLISECONDS_PER_MINUTE,
+    );
   }
 
   /**
    * Obtiene el inicio del día (00:00:00)
    */
-  static getStartOfDay(date: Date): Date {
+  getStartOfDay(date: Date): Date {
     const startOfDay = new Date(date);
     startOfDay.setHours(0, 0, 0, 0);
     return startOfDay;
@@ -64,21 +44,37 @@ export class AttendanceValidatorService {
   /**
    * Obtiene el final del día (23:59:59.999)
    */
-  static getEndOfDay(date: Date): Date {
+  getEndOfDay(date: Date): Date {
     const endOfDay = new Date(date);
     endOfDay.setHours(23, 59, 59, 999);
     return endOfDay;
   }
 
   /**
-   * Verifica si dos fechas son del mismo día
+   * Obtiene la hora de inicio de trabajo para una fecha dada
+   * Método privado para evitar duplicación de código
    */
-  static isSameDay(date1: Date, date2: Date): boolean {
-    return (
-      date1.getFullYear() === date2.getFullYear() &&
-      date1.getMonth() === date2.getMonth() &&
-      date1.getDate() === date2.getDate()
+  private getWorkStartTime(date: Date): Date {
+    const workStartTime = new Date(date);
+    workStartTime.setHours(
+      BUSINESS_CONSTANTS.WORK_SCHEDULE.START_HOUR,
+      BUSINESS_CONSTANTS.WORK_SCHEDULE.START_MINUTE,
+      0,
+      0,
     );
+    return workStartTime;
+  }
+
+  /**
+   * Calcula el umbral de tardanza (hora de inicio + tolerancia)
+   * Método privado para evitar duplicación de código
+   */
+  private getLateThreshold(workStartTime: Date): Date {
+    const lateThreshold = new Date(workStartTime);
+    lateThreshold.setHours(
+      lateThreshold.getHours() +
+        BUSINESS_CONSTANTS.WORK_SCHEDULE.LATE_THRESHOLD_HOURS,
+    );
+    return lateThreshold;
   }
 }
-

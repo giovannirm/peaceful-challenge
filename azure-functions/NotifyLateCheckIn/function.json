@@ -1,0 +1,14 @@
+{
+  "bindings": [
+    {
+      "name": "message",
+      "type": "serviceBusTrigger",
+      "direction": "in",
+      "connection": "SERVICE_BUS_CONNECTION_STRING",
+      "queueName": "%SERVICE_BUS_QUEUE_NAME%",
+      "cardinality": "one"
+    }
+  ],
+  "scriptFile": "../dist/NotifyLateCheckIn/index.js"
+}
+
