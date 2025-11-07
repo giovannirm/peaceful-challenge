@@ -25,15 +25,11 @@ function Write-ErrorMsg {
 
 Write-Info "Configurando el entorno completo..."
 
-# Paso 0: Eliminar archivos .env existentes para regenerarlos
-Write-Info "Limpiando archivos de entorno anteriores..."
+# Paso 0: Eliminar archivo .env existente para regenerarlo
+Write-Info "Limpiando archivo de entorno anterior..."
 if (Test-Path ".env") {
     Remove-Item ".env" -Force
     Write-Success "Archivo .env eliminado"
-}
-if (Test-Path ".env.azure") {
-    Remove-Item ".env.azure" -Force
-    Write-Success "Archivo .env.azure eliminado"
 }
 
 # Paso 1: Verificar si existe .env (ahora debería no existir)
@@ -45,15 +41,14 @@ if (-not (Test-Path ".env")) {
         Write-Info "Generando .env desde Terraform outputs..."
         Set-Location iac/terraform
         if (Test-Path "scripts/generate-env.ps1") {
-            & .\scripts\generate-env.ps1 . ..\..\.env.azure
+            & .\scripts\generate-env.ps1 . ..\..\.env
         }
         Set-Location ../..
         
-        if (Test-Path ".env.azure") {
-            Copy-Item .env.azure .env
+        if (Test-Path ".env") {
             Write-Success "Archivo .env generado desde Terraform"
         } else {
-            Write-Warning "No se pudo generar .env.azure desde Terraform"
+            Write-Warning "No se pudo generar .env desde Terraform"
             Write-Info "Creando .env desde env.example..."
             if (Test-Path "env.example") {
                 Copy-Item env.example .env

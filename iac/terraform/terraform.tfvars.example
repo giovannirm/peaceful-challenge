@@ -10,13 +10,24 @@ sql_admin_username = "sqladmin"
 sql_admin_password = "TuContraseñaSegura123!@#"
 
 # Configuración de la base de datos (Free tier - Serverless)
+# GP_S_Gen5_1 = Serverless General Purpose
+# Tier gratuito: 250 GB durante 12 meses para nuevas cuentas
+# Se pausa automáticamente cuando no se usa, minimizando costos
 database_name      = "peaceful_db"
 database_sku_name  = "GP_S_Gen5_1"  # Serverless General Purpose (Free tier)
 database_max_size_gb = 32  # Máximo para tier gratuito
 
 # Configuración Serverless
 auto_pause_delay_in_minutes = 60  # Pausar después de 60 minutos de inactividad
-min_capacity = 0.5  # Capacidad mínima (0.5 vCore)
+min_capacity = 0.5  # Capacidad mínima (0.5 vCore) - minimiza costos
+
+# Service Bus (Basic es el tier más económico, no hay tier completamente gratuito)
+# Costo aproximado: ~$0.05 USD por millón de operaciones
+# service_bus_sku = "Basic"  # Ya está configurado por defecto
+
+# Function App (Consumption Plan Y1 incluye tier gratuito)
+# Tier gratuito: 1M ejecuciones/mes + 400K GB-seg/mes gratis
+# function_app_sku = "Y1"  # Ya está configurado por defecto
 
 # IP del cliente (opcional, dejar vacío si no se necesita acceso desde IP específica)
 # client_ip_address = "192.168.1.100"

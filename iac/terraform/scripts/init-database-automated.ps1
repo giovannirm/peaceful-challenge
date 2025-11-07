@@ -24,20 +24,20 @@ if (-not (Test-Path $SqlFile)) {
 # Guardar ubicacion original
 $originalLocation = Get-Location
 
-# Intentar obtener datos desde .env.azure primero (mas confiable)
+# Intentar obtener datos desde .env primero (mas confiable)
 $serverFQDN = $null
 $databaseName = $null
 
-# Buscar .env.azure en la raiz del proyecto (dos niveles arriba desde iac/terraform)
-$envAzurePath = Join-Path $originalLocation "..\..\.env.azure"
-$envAzurePath = (Resolve-Path $envAzurePath -ErrorAction SilentlyContinue).Path
-if (-not $envAzurePath) {
+# Buscar .env en la raiz del proyecto (dos niveles arriba desde iac/terraform)
+$envPath = Join-Path $originalLocation "..\..\.env"
+$envPath = (Resolve-Path $envPath -ErrorAction SilentlyContinue).Path
+if (-not $envPath) {
     # Si no se encuentra, intentar en el directorio actual
-    $envAzurePath = Join-Path $originalLocation ".env.azure"
+    $envPath = Join-Path $originalLocation ".env"
 }
-if (Test-Path $envAzurePath) {
-    Write-Host "Leyendo configuracion desde .env.azure..." -ForegroundColor Yellow
-    $envContent = Get-Content $envAzurePath -Raw -Encoding UTF8
+if (Test-Path $envPath) {
+    Write-Host "Leyendo configuracion desde .env..." -ForegroundColor Yellow
+    $envContent = Get-Content $envPath -Raw -Encoding UTF8
     if ($envContent -match 'DB_HOST\s*=\s*([^\r\n]+)') {
         $serverFQDN = $matches[1].Trim()
     }
@@ -46,7 +46,7 @@ if (Test-Path $envAzurePath) {
     }
 }
 
-# Si no se encontraron en .env.azure, intentar desde Terraform outputs
+# Si no se encontraron en .env, intentar desde Terraform outputs
 if (-not $serverFQDN -or -not $databaseName) {
     Write-Host "Obteniendo datos de Terraform..." -ForegroundColor Yellow
     
@@ -85,14 +85,14 @@ if (-not $serverFQDN -or -not $databaseName) {
 # Verificar que tengamos los valores necesarios
 if ([string]::IsNullOrWhiteSpace($serverFQDN)) {
     Write-Error "No se pudo obtener el servidor SQL. Verifica que:"
-    Write-Error "1. El archivo .env.azure existe y tiene DB_HOST configurado"
+    Write-Error "1. El archivo .env existe y tiene DB_HOST configurado"
     Write-Error "2. O ejecuta 'terraform refresh' y 'terraform apply' para actualizar los outputs"
     exit 1
 }
 
 if ([string]::IsNullOrWhiteSpace($databaseName)) {
     Write-Error "No se pudo obtener el nombre de la base de datos. Verifica que:"
-    Write-Error "1. El archivo .env.azure existe y tiene DB_DATABASE configurado"
+    Write-Error "1. El archivo .env existe y tiene DB_DATABASE configurado"
     Write-Error "2. O ejecuta 'terraform refresh' y 'terraform apply' para actualizar los outputs"
     exit 1
 }
@@ -110,7 +110,7 @@ try {
     Write-Warning "No se pudo resolver el DNS del servidor SQL: $serverFQDN"
     Write-Warning "Esto puede indicar que:"
     Write-Warning "1. El servidor SQL no existe aún (ejecuta 'terraform apply' primero)"
-    Write-Warning "2. El nombre del servidor en .env.azure es incorrecto"
+    Write-Warning "2. El nombre del servidor en .env es incorrecto"
     Write-Warning "3. Hay un problema de conectividad de red"
     Write-Host ""
     $continue = Read-Host "¿Deseas continuar de todas formas? (S/N)"
@@ -120,15 +120,15 @@ try {
     }
 }
 
-# Obtener credenciales desde .env.azure, terraform.tfvars o solicitar al usuario
+# Obtener credenciales desde .env, terraform.tfvars o solicitar al usuario
 $username = $null
 $password = $null
 
-# Primero intentar leer desde .env.azure (usar la misma ruta que ya encontramos)
-if ($envAzurePath -and (Test-Path $envAzurePath)) {
-    Write-Host "Leyendo credenciales desde .env.azure..." -ForegroundColor Yellow
+# Primero intentar leer desde .env (usar la misma ruta que ya encontramos)
+if ($envPath -and (Test-Path $envPath)) {
+    Write-Host "Leyendo credenciales desde .env..." -ForegroundColor Yellow
     # Leer con codificacion UTF-8 para preservar caracteres especiales
-    $envContent = Get-Content $envAzurePath -Raw -Encoding UTF8
+    $envContent = Get-Content $envPath -Raw -Encoding UTF8
     if ($envContent -match 'DB_USERNAME\s*=\s*([^\r\n]+)') {
         $username = $matches[1].Trim()
     }
@@ -136,11 +136,11 @@ if ($envAzurePath -and (Test-Path $envAzurePath)) {
         $password = $matches[1].Trim()
     }
     if ($username -and $password) {
-        Write-Host "Credenciales encontradas en .env.azure" -ForegroundColor Green
+        Write-Host "Credenciales encontradas en .env" -ForegroundColor Green
     }
 }
 
-# Si no se encontraron en .env.azure, intentar desde terraform.tfvars
+# Si no se encontraron en .env, intentar desde terraform.tfvars
 if (-not $username -or -not $password) {
     # Cambiar al directorio de Terraform para leer terraform.tfvars
     if ($TerraformDir -ne ".") {
@@ -197,6 +197,7 @@ try {
                          -U "$username" `
                          -P "$password" `
                          -Q "$testQuery" `
+                         -f 65001 `
                          -l 5 `
                          -C `
                          -b `
@@ -214,7 +215,7 @@ try {
         Write-Host "   → Solución: Ejecuta 'terraform apply' primero para crear los recursos" -ForegroundColor Cyan
         Write-Host ""
         Write-Host "2. Las credenciales son incorrectas" -ForegroundColor White
-        Write-Host "   → Verifica el archivo .env.azure o terraform.tfvars" -ForegroundColor Cyan
+        Write-Host "   → Verifica el archivo .env o terraform.tfvars" -ForegroundColor Cyan
         Write-Host ""
         Write-Host "3. Tu IP no está permitida en las reglas de firewall" -ForegroundColor White
         Write-Host "   → Verifica las reglas de firewall en Azure Portal" -ForegroundColor Cyan
@@ -241,6 +242,7 @@ try {
            -U "$username" `
            -P "$password" `
            -i "$SqlFile" `
+           -f 65001 `
            -l 30 `
            -C `
            -b

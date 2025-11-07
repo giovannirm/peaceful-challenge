@@ -6,7 +6,7 @@ import { DATABASE } from '@shared/infrastructure/persistence/constants/database.
 @Entity(DATABASE.TABLES.EMPLOYEES)
 export class EmployeeTypeOrmEntity {
   @PrimaryGeneratedColumn()
-  id: number;
+  id?: number;
 
   @Column({
     type: 'varchar',
@@ -42,8 +42,10 @@ export class EmployeeTypeOrmEntity {
   attendances: AttendanceTypeOrmEntity[];
 
   static toDomain(entity: EmployeeTypeOrmEntity): Employee {
+    // El ID siempre debería existir cuando se convierte desde la BD
+    // Si no existe, usar 0 como fallback (aunque no debería pasar)
     return new Employee(
-      entity.id,
+      entity.id ?? 0,
       entity.firstName,
       entity.lastName,
       entity.documentNumber,
@@ -53,7 +55,11 @@ export class EmployeeTypeOrmEntity {
 
   static fromDomain(domain: Employee): EmployeeTypeOrmEntity {
     const entity = new EmployeeTypeOrmEntity();
-    entity.id = domain.id;
+    // Solo asignar ID si es mayor que 0 (entidad existente)
+    // Si es 0, no asignar el ID para que TypeORM lo trate como nueva entidad
+    // y genere un nuevo ID automáticamente
+    if (domain.id > 0) entity.id = domain.id;
+    // Si domain.id es 0, no asignamos entity.id, dejando que TypeORM lo genere
     entity.firstName = domain.firstName;
     entity.lastName = domain.lastName;
     entity.documentNumber = domain.documentNumber;

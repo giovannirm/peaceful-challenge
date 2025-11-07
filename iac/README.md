@@ -57,7 +57,7 @@ Los scripts de inicialización se ejecutan automáticamente después de crear la
 
 ```bash
 cd terraform
-./scripts/init-database-automated.sh
+# En Linux/Mac, usar PowerShell Core: pwsh -File scripts/init-database-automated.ps1
 ```
 
 O manualmente:

@@ -4,7 +4,7 @@
 
 param(
     [string]$TerraformDir = ".",
-    [string]$OutputFile = "..\..\.env.azure"
+    [string]$OutputFile = "..\..\.env"
 )
 
 Write-Host "=== Generando archivo .env desde Terraform outputs ===" -ForegroundColor Cyan
@@ -194,8 +194,5 @@ if ($outputDir -and -not (Test-Path $outputDir)) {
 [System.IO.File]::WriteAllText($outputPath, $envContent, $utf8NoBom)
 
 Write-Host ""
-Write-Host "Archivo generado exitosamente: $OutputFile" -ForegroundColor Green
-Write-Host ""
-Write-Host "Puedes usarlo con:" -ForegroundColor Cyan
-Write-Host "  Copy-Item '$OutputFile' .env" -ForegroundColor White
+Write-Host "Archivo .env generado exitosamente: $OutputFile" -ForegroundColor Green
 Write-Host ""

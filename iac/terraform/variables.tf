@@ -35,9 +35,9 @@ variable "database_name" {
 }
 
 variable "database_sku_name" {
-  description = "SKU de la base de datos. Para tier gratuito usar 'Basic' o 'S0' (Serverless). Para Free tier completo, usar 'GP_S_Gen5_1' (Serverless General Purpose)"
+  description = "SKU de la base de datos. GP_S_Gen5_1 = Serverless General Purpose (tier gratuito: 250 GB durante 12 meses para nuevas cuentas)"
   type        = string
-  default     = "GP_S_Gen5_1"
+  default     = "GP_S_Gen5_1" # Serverless - se pausa automáticamente cuando no se usa, minimizando costos
 }
 
 variable "database_max_size_gb" {
@@ -82,9 +82,9 @@ variable "service_bus_namespace_name" {
 }
 
 variable "service_bus_sku" {
-  description = "SKU del Service Bus (Basic, Standard, Premium)"
+  description = "SKU del Service Bus (Basic es el más económico, no hay tier gratuito disponible)"
   type        = string
-  default     = "Basic"
+  default     = "Basic" # Tier más económico disponible (~$0.05 USD por millón de operaciones)
 }
 
 variable "service_bus_queue_name" {
@@ -119,9 +119,9 @@ variable "function_app_name" {
 }
 
 variable "function_app_sku" {
-  description = "SKU del plan de App Service para la Function App (Y1 para Consumption, EP1 para Premium)"
+  description = "SKU del plan de App Service para la Function App. Y1 = Consumption Plan con tier gratuito (1M ejecuciones/mes gratis)"
   type        = string
-  default     = "Y1" # Consumption Plan (pay-per-use)
+  default     = "Y1" # Consumption Plan - incluye tier gratuito: 1M ejecuciones/mes + 400K GB-seg/mes gratis
 }
 
 variable "function_app_runtime" {

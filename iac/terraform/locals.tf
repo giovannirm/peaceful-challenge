@@ -6,6 +6,8 @@ locals {
   }
 
   # SQL Database Configuration
+  # Usar collation que soporte mejor UTF-8 y caracteres especiales en español
+  # SQL_Latin1_General_CP1_CI_AS soporta mejor los caracteres Unicode/UTF-8
   database = {
     collation = "SQL_Latin1_General_CP1_CI_AS"
   }

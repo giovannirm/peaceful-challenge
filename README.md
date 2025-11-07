@@ -1,24 +1,13 @@
 # Sistema de Control de Asistencia Laboral
 
-Sistema de control de asistencia laboral desarrollado con NestJS y SQL Server, utilizando Arquitectura Hexagonal y completamente dockerizado.
+Sistema de control de asistencia laboral desarrollado con NestJS y SQL Server, utilizando **Arquitectura Hexagonal** y completamente dockerizado.
 
-## Reto Técnico
+## 🚀 Inicio Rápido
 
-El objetivo de este reto es desarrollar una API RESTful para gestionar la asistencia de los empleados en una empresa. La API debe permitir registrar entradas y salidas, así como consultar los registros de asistencia.
-
-## Inicio Rápido con Docker 🐳
-
-La forma más rápida de ejecutar el proyecto es usando Docker:
+### Opción 1: Docker (Recomendado)
 
 ```bash
-# Opción 1: Usando npm (recomendado)
 npm run docker:up
-
-# Opción 2: Usando PowerShell
-.\scripts.ps1 up
-
-# Opción 3: Directamente con docker-compose
-cd docker && docker-compose -f docker-compose.yml up --build -d
 ```
 
 Esto iniciará:
@@ -26,83 +15,175 @@ Esto iniciará:
 - **API NestJS** en `http://localhost:3000`
 - **Health Check** en `http://localhost:3000/health`
 
-**Nota**: Para usar Azure SQL Database, primero configura Terraform y genera el archivo `.env` (ver sección de Infraestructura).
-
-Para más detalles sobre Docker, consulta [DOCKER.md](DOCKER.md).
-
-## Arquitectura
-
-Este proyecto utiliza **Arquitectura Hexagonal (Ports and Adapters)** para una mejor separación de responsabilidades y mantenibilidad.
-
-Para más detalles, consulta [ARCHITECTURE.md](ARCHITECTURE.md).
-
-## Infraestructura como Código (IaC)
-
-Este proyecto incluye configuración de Terraform para crear y gestionar una base de datos Azure SQL Database.
-
-### Configuración de Azure SQL Database
-
-**Opción 1: Usando scripts (Recomendado)**
+### Opción 2: Desarrollo Local
 
 ```bash
-# 1. Configura las variables de Terraform
+# Instalar dependencias
+npm install
+
+# Configurar variables de entorno
+cp env.example .env
+# Edita .env con tus valores
+
+# Iniciar en modo desarrollo
+npm run start:dev
+```
+
+## 📚 Documentación
+
+- **[Arquitectura](docs/ARCHITECTURE.md)** - Arquitectura Hexagonal y estructura del proyecto
+- **[Docker](docs/DOCKER.md)** - Guía completa de Docker y despliegue
+- **[Configuración](docs/CONFIG.md)** - Variables de entorno y configuración
+- **[Ejemplos de API](docs/API_EXAMPLES.md)** - Ejemplos de uso de la API
+- **[Reglas de Desarrollo](docs/DEVELOPMENT_RULES.md)** - Estándares y mejores prácticas
+- **[Azure Functions](docs/AZURE_FUNCTIONS.md)** - Integración con Azure Functions para notificaciones
+
+## 🏗️ Infraestructura como Código (IaC)
+
+Este proyecto incluye configuración de Terraform para desplegar recursos en Azure.
+
+### Configuración Rápida de Azure SQL Database
+
+```bash
+# 1. Configura Terraform
 cd iac/terraform
 Copy-Item terraform.tfvars.example terraform.tfvars
 # Edita terraform.tfvars con tus valores
 
-# 2. Inicializa Terraform
+# 2. Despliega la infraestructura
 terraform init
-
-# 3. Aplica Terraform
 terraform apply
 
-# 4. Genera .env automáticamente
+# 3. Genera el archivo .env automáticamente
 cd ../..
-.\scripts.ps1 generate-env
-# O
 npm run generate-env
 
-# 5. Copia el archivo generado
-Copy-Item .env.azure .env
+# 4. Inicializa la base de datos
+cd iac/terraform
+.\scripts\init-database-automated.ps1
 ```
 
-**Opción 2: Manualmente**
-
-1. Ve al directorio de Terraform:
-   ```bash
-   cd iac/terraform
-   ```
-
-2. Configura las variables:
-   ```bash
-   cp terraform.tfvars.example terraform.tfvars
-   # Edita terraform.tfvars con tus valores
-   ```
-
-3. Inicializa y aplica Terraform:
-   ```bash
-   terraform init
-   terraform plan
-   terraform apply
-   ```
-
-4. Genera el archivo `.env` automáticamente:
-   ```powershell
-   # Usando script PowerShell:
-   .\scripts.ps1 generate-env
-   
-   # O usando npm:
-   npm run generate-env
-   
-   # O manualmente:
-   cd iac/terraform
-   .\scripts\generate-env.ps1
-   ```
-
-5. Inicializa la base de datos con el esquema:
-   ```powershell
-   cd iac/terraform
-   .\scripts\init-database-automated.ps1
-   ```
-
 Para más detalles, consulta el [README de Terraform](iac/terraform/README.md).
+
+## 🛠️ Scripts Disponibles
+
+```bash
+# Docker
+npm run docker:up      # Construir e iniciar servicios
+npm run docker:down    # Detener servicios
+npm run docker:logs    # Ver logs
+npm run docker:clean   # Eliminar contenedores y volúmenes
+
+# Desarrollo
+npm run start:dev      # Modo desarrollo con hot-reload
+npm run start:debug    # Modo debug
+npm run start:prod     # Modo producción
+
+# Testing
+npm run test           # Tests unitarios
+npm run test:e2e       # Tests end-to-end
+npm run test:cov       # Coverage
+
+# Utilidades
+npm run generate-env   # Generar .env desde Terraform
+npm run lint           # Linter
+npm run format         # Formatear código
+```
+
+## 📋 Características
+
+- ✅ **Arquitectura Hexagonal** - Separación clara de responsabilidades
+- ✅ **Dockerizado** - Fácil despliegue y desarrollo
+- ✅ **Azure SQL Database** - Soporte para base de datos en la nube
+- ✅ **TypeORM** - ORM para SQL Server
+- ✅ **Validación** - Validación de datos con class-validator
+- ✅ **Swagger** - Documentación automática de la API
+- ✅ **Notificaciones** - Integración con Azure Service Bus y Functions
+- ✅ **Health Checks** - Endpoint de salud para monitoreo
+
+## 🔧 Tecnologías
+
+- **NestJS** - Framework Node.js
+- **TypeScript** - Lenguaje de programación
+- **SQL Server** - Base de datos
+- **TypeORM** - ORM
+- **Docker** - Contenedores
+- **Terraform** - Infrastructure as Code
+- **Azure** - Cloud provider
+
+## 📖 API Endpoints
+
+### Asistencia
+
+- `POST /attendance/check-in` - Registrar entrada
+- `POST /attendance/check-out` - Registrar salida
+- `GET /attendance/employee/:id` - Obtener asistencias de un empleado
+- `GET /attendance/report/:id` - Generar reporte de asistencia
+
+### Empleados
+
+- `GET /employees` - Listar todos los empleados
+- `GET /employees/:id` - Obtener empleado por ID
+- `POST /employees` - Crear empleado
+- `PATCH /employees/:id` - Actualizar empleado
+
+### Sistema
+
+- `GET /health` - Health check
+
+Para ejemplos detallados, consulta [docs/API_EXAMPLES.md](docs/API_EXAMPLES.md).
+
+## 🏛️ Arquitectura
+
+Este proyecto utiliza **Arquitectura Hexagonal (Ports and Adapters)** para garantizar:
+
+- **Independencia del framework** - El dominio no depende de NestJS
+- **Testabilidad** - Fácil creación de mocks y tests
+- **Flexibilidad** - Cambiar implementaciones sin afectar el dominio
+- **Mantenibilidad** - Código organizado y fácil de entender
+
+Para más detalles, consulta [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+
+## 📝 Reglas de Desarrollo
+
+Este proyecto sigue estrictas reglas de desarrollo:
+
+- ❌ **Prohibición de Magic Strings** - Todas las cadenas deben estar en constantes
+- ✅ **Arquitectura Hexagonal** - Respetar las capas y dependencias
+- ✅ **Clean Code** - Código limpio y mantenible
+
+Para más detalles, consulta [docs/DEVELOPMENT_RULES.md](docs/DEVELOPMENT_RULES.md).
+
+## 🔐 Variables de Entorno
+
+Las variables de entorno se configuran en el archivo `.env`. Consulta `env.example` para ver todas las variables disponibles.
+
+Para más detalles sobre la configuración, consulta [docs/CONFIG.md](docs/CONFIG.md).
+
+## 📦 Estructura del Proyecto
+
+```
+.
+├── src/                    # Código fuente
+│   ├── attendance/         # Módulo de asistencia
+│   ├── employees/          # Módulo de empleados
+│   └── shared/             # Código compartido
+├── docs/                   # Documentación
+├── docker/                 # Configuración Docker
+├── iac/                    # Infrastructure as Code
+│   ├── terraform/          # Configuración Terraform
+│   └── database/           # Scripts SQL
+├── test/                   # Tests E2E
+└── azure-functions/        # Azure Functions
+```
+
+## 🤝 Contribuir
+
+1. Lee las [Reglas de Desarrollo](docs/DEVELOPMENT_RULES.md)
+2. Asegúrate de que los tests pasen: `npm run test`
+3. Verifica el linter: `npm run lint`
+4. Formatea el código: `npm run format`
+
+## 📄 Licencia
+
+UNLICENSED

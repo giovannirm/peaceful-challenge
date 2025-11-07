@@ -99,11 +99,14 @@ resource "random_string" "service_bus_suffix" {
 }
 
 # Azure Service Bus Namespace
+# Nota: Service Bus Basic es el tier más económico disponible
+# No hay tier completamente gratuito, pero Basic tiene el costo más bajo
+# Costo aproximado: ~$0.05 USD por millón de operaciones
 resource "azurerm_servicebus_namespace" "main" {
   name                = "${var.service_bus_namespace_name}-${random_string.service_bus_suffix.result}"
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
-  sku                 = var.service_bus_sku
+  sku                 = var.service_bus_sku # Basic es el más económico
 
   tags = var.tags
 }
@@ -143,23 +146,31 @@ resource "random_string" "storage_account_suffix" {
 }
 
 # Storage Account for Function App
+# Nota: Azure ofrece 5 GB de almacenamiento gratuito durante 12 meses para nuevas cuentas
+# Este Storage Account se usará dentro del tier gratuito si el uso es bajo
 resource "azurerm_storage_account" "function_app" {
   name                     = "${var.function_app_storage_account_name}${random_string.storage_account_suffix.result}"
   resource_group_name      = azurerm_resource_group.main.name
   location                 = azurerm_resource_group.main.location
   account_tier             = "Standard"
   account_replication_type = "LRS"
+  # LRS (Local Redundant Storage) es la opción más económica
+  # Para tier gratuito: 5 GB gratis durante 12 meses
 
   tags = var.tags
 }
 
 # App Service Plan for Function App (Consumption Plan)
+# Nota: Consumption Plan (Y1) incluye tier gratuito:
+# - 1 millón de ejecuciones gratis por mes
+# - 400,000 GB-segundos de tiempo de ejecución gratis por mes
+# - Solo pagas por lo que usas después de los límites gratuitos
 resource "azurerm_service_plan" "function_app" {
   name                = "${var.function_app_name}-plan-${random_string.function_app_suffix.result}"
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
   os_type             = "Linux"
-  sku_name            = var.function_app_sku
+  sku_name            = var.function_app_sku # Y1 = Consumption Plan (tier gratuito incluido)
 
   tags = var.tags
 }

@@ -57,7 +57,7 @@ Esta configuración de Terraform crea una instancia de Azure SQL Database para e
    npm run generate-env
    ```
    
-   Esto ejecutará `terraform apply` y luego generará automáticamente el archivo `.env.azure`.
+   Esto ejecutará `terraform apply` y luego generará automáticamente el archivo `.env`.
    
    **Opción 2: Manualmente**
    ```bash
@@ -81,7 +81,7 @@ Esta configuración de Terraform crea una instancia de Azure SQL Database para e
    .\scripts\generate-env.ps1
    ```
    
-   Esto generará un archivo `.env.azure` en la raíz del proyecto con todas las variables necesarias.
+   Esto generará el archivo `.env` en la raíz del proyecto con todas las variables necesarias.
    
    **Opción 3: Ver outputs manualmente**
    ```bash
@@ -93,30 +93,21 @@ Esta configuración de Terraform crea una instancia de Azure SQL Database para e
 
 7. **Inicializa la base de datos con el esquema:**
    
-   Después de que Terraform complete la creación, ejecuta el script de inicialización:
+   Después de que Terraform complete la creación, ejecuta el script de inicialización automatizado:
 
    **Windows (PowerShell):**
    ```powershell
-   .\scripts\init-database.ps1 `
-     -ServerFQDN "<sql-server-fqdn>" `
-     -DatabaseName "peaceful_db" `
-     -Username "<admin-username>" `
-     -Password "<admin-password>" `
-     -SqlFile "../database/init.sql"
+   .\scripts\init-database-automated.ps1
    ```
 
    **Linux/Mac (Bash):**
    ```bash
-   chmod +x scripts/init-database.sh
-   ./scripts/init-database.sh \
-     "<sql-server-fqdn>" \
-     "peaceful_db" \
-     "<admin-username>" \
-     "<admin-password>" \
-     "../database/init.sql"
+   # En Linux/Mac, puedes usar PowerShell Core (pwsh) para ejecutar los scripts .ps1
+   # O adaptar los scripts PowerShell a Bash según tus necesidades
+   pwsh -File scripts/init-database-automated.ps1
    ```
 
-   O puedes obtener los valores desde los outputs de Terraform:
+   El script automatizado obtiene automáticamente los valores desde Terraform outputs o desde el archivo `.env`. También puedes obtener los valores manualmente desde los outputs de Terraform:
    ```bash
    terraform output -json
    ```
@@ -135,10 +126,7 @@ npm run generate-env
 .\scripts\generate-env.ps1
 ```
 
-Esto creará un archivo `.env.azure` con todas las variables correctas. Luego puedes copiarlo:
-```powershell
-Copy-Item .env.azure .env
-```
+Esto generará el archivo `.env` directamente con todas las variables correctas.
 
 **O manualmente**, configura las siguientes variables de entorno:
 

@@ -70,7 +70,6 @@ project-root/
 │   │   ├── outputs.tf
 │   │   ├── terraform.tfvars.example
 │   │   └── scripts/                # Scripts de inicialización
-│   │       ├── init-database-automated.sh
 │   │       └── init-database-automated.ps1
 │   └── database/                   # Scripts SQL de inicialización
 │       └── init.sql                # Script unificado (compatible con Docker y Azure)

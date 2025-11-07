@@ -81,8 +81,7 @@ npm run generate-env
 # O
 .\scripts.ps1 generate-env
 
-# Esto creará .env.azure, luego cópialo:
-Copy-Item .env.azure .env
+# Esto generará el archivo .env directamente
 ```
 
 El archivo generado contendrá:

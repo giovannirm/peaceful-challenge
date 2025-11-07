@@ -5,6 +5,7 @@
 -- Para Azure SQL: Se ejecuta directamente (Terraform ya creó la BD)
 
 -- Crear tabla de empleados
+-- Usando VARCHAR para comprobar si funciona con la collation y codificación correcta
 IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'employees' AND type = 'U')
 BEGIN
     CREATE TABLE employees (
@@ -19,29 +20,24 @@ END
 ELSE
 BEGIN
     PRINT 'Tabla employees ya existe';
-    -- Agregar columna email si no existe
-    IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID('employees') AND name = 'email')
-    BEGIN
-        ALTER TABLE employees ADD email VARCHAR(255) NULL;
-        PRINT 'Columna email agregada a la tabla employees';
-    END
 END
 GO
 
 -- Insertar datos iniciales de empleados (solo si no existen)
-IF NOT EXISTS (SELECT 1 FROM employees WHERE document_number = '12345678')
+-- Usando prefijo N'...' para convertir a la codepage de la collation
+IF (SELECT COUNT(*) FROM employees) > 0
 BEGIN
-    INSERT INTO employees (first_name, last_name, document_number, email) VALUES 
-    ('Juan', 'Pérez', '12345678', 'juan.perez@example.com'),
-    ('María', 'García', '87654321', 'maria.garcia@example.com'),
-    ('Carlos', 'López', '11223344', 'carlos.lopez@example.com'),
-    ('Ana', 'Martínez', '55667788', 'ana.martinez@example.com'),
-    ('Luis', 'Rodríguez', '99887766', 'luis.rodriguez@example.com');
-    PRINT 'Datos de empleados insertados exitosamente';
+    PRINT 'Datos de empleados ya existen';
 END
 ELSE
 BEGIN
-    PRINT 'Datos de empleados ya existen';
+    INSERT INTO employees (first_name, last_name, document_number, email) VALUES 
+    (N'Juan', N'Pérez', N'12345678', N'juan.perez@example.com'),
+    (N'María', N'García', N'87654321', N'maria.garcia@example.com'),
+    (N'Carlos', N'López', N'11223344', N'carlos.lopez@example.com'),
+    (N'Ana', N'Martínez', N'55667788', N'ana.martinez@example.com'),
+    (N'Luis', N'Rodríguez', N'99887766', N'luis.rodriguez@example.com');
+    PRINT 'Datos de empleados insertados exitosamente';
 END
 GO
 
@@ -51,7 +47,7 @@ BEGIN
     CREATE TABLE attendances (
         id INT PRIMARY KEY IDENTITY(1,1),
         employee_id INT NOT NULL,
-        type VARCHAR(20) NOT NULL CHECK (type IN ('check_in', 'check_out')),
+        type VARCHAR(20) NOT NULL CHECK (type IN (N'check_in', N'check_out')),
         latitude DECIMAL(10, 7) NOT NULL,
         longitude DECIMAL(10, 7) NOT NULL,
         record_time DATETIME NOT NULL,

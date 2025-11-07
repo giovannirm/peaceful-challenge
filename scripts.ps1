@@ -74,14 +74,13 @@ switch ($Command.ToLower()) {
         Write-Info "Generando archivo .env desde Terraform outputs..."
         Set-Location iac/terraform
         if (Test-Path "scripts/generate-env.ps1") {
-            & .\scripts\generate-env.ps1 . ..\..\.env.azure
+            & .\scripts\generate-env.ps1 . ..\..\.env
         } else {
             Write-Warning "Script generate-env.ps1 no encontrado"
         }
         Set-Location ../..
-        if (Test-Path ".env.azure") {
-            Write-Success "✓ Archivo .env.azure generado"
-            Write-Warning "Para usarlo: Copy-Item .env.azure .env"
+        if (Test-Path ".env") {
+            Write-Success "✓ Archivo .env generado exitosamente"
         }
     }
     
@@ -90,12 +89,11 @@ switch ($Command.ToLower()) {
         Set-Location iac/terraform
         terraform apply
         if (Test-Path "scripts/generate-env.ps1") {
-            & .\scripts\generate-env.ps1 . ..\..\.env.azure
+            & .\scripts\generate-env.ps1 . ..\..\.env
         }
         Set-Location ../..
-        if (Test-Path ".env.azure") {
-            Write-Success "✓ Infraestructura creada y .env generado"
-            Write-Warning "Para usarlo: Copy-Item .env.azure .env"
+        if (Test-Path ".env") {
+            Write-Success "✓ Infraestructura creada y .env generado exitosamente"
         }
     }
     

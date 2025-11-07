@@ -21,7 +21,7 @@
     "docker:down": "cd docker && docker-compose -f docker-compose.yml down",
     "docker:logs": "cd docker && docker-compose -f docker-compose.yml logs -f",
     "docker:clean": "cd docker && docker-compose -f docker-compose.yml down -v",
-    "generate-env": "cd iac/terraform && pwsh -File scripts/generate-env.ps1 . ..\\..\\.env.azure || cd iac/terraform && powershell -File scripts/generate-env.ps1 . ..\\..\\.env.azure",
+    "generate-env": "cd iac/terraform && pwsh -File scripts/generate-env.ps1 . ..\\..\\.env || cd iac/terraform && powershell -File scripts/generate-env.ps1 . ..\\..\\.env",
     "setup": "powershell -File scripts/setup.ps1",
     "start": "npm run setup && npm run docker:up"
   },

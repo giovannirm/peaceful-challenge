@@ -90,11 +90,7 @@ npm run generate-env
 .\scripts.ps1 generate-env
 ```
 
-Esto creará `.env.azure` con los valores correctos. Luego cópialo:
-
-```powershell
-Copy-Item .env.azure .env
-```
+Esto generará el archivo `.env` directamente con los valores correctos.
 
 #### Para Docker Local (Opcional)
 
@@ -239,7 +235,7 @@ docker run -p 3000:3000 --env-file ..\.env peaceful-app:latest
 
 Para usar Azure SQL Database en lugar de SQL Server local:
 
-1. Configura Terraform (ver [README.md](README.md#infraestructura-como-código-iac))
+1. Configura Terraform (ver [README.md](../README.md#infraestructura-como-código-iac))
 
 2. Genera el archivo `.env` automáticamente:
    ```powershell
@@ -248,10 +244,7 @@ Para usar Azure SQL Database en lugar de SQL Server local:
    .\scripts.ps1 generate-env
    ```
 
-3. Copia el archivo generado:
-   ```powershell
-   Copy-Item .env.azure .env
-   ```
+3. El archivo `.env` se genera automáticamente.
 
 4. Opcionalmente, comenta o elimina el servicio `db` en `docker-compose.yml` si solo usas Azure SQL.
 
