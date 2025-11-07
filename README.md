@@ -81,6 +81,7 @@ npm run start:prod     # Modo producción
 
 # Testing
 npm run test           # Tests unitarios
+npm run test:watch     # Tests en modo watch
 npm run test:e2e       # Tests end-to-end
 npm run test:cov       # Coverage
 
@@ -100,6 +101,7 @@ npm run format         # Formatear código
 - ✅ **Swagger** - Documentación automática de la API
 - ✅ **Notificaciones** - Integración con Azure Service Bus y Functions
 - ✅ **Health Checks** - Endpoint de salud para monitoreo
+- ✅ **Tests Unitarios** - Cobertura completa de casos de uso y servicios
 
 ## 🔧 Tecnologías
 
@@ -177,12 +179,70 @@ Para más detalles sobre la configuración, consulta [docs/CONFIG.md](docs/CONFI
 └── azure-functions/        # Azure Functions
 ```
 
+## 🧪 Testing
+
+El proyecto incluye una suite completa de tests unitarios que validan el correcto funcionamiento de todos los componentes:
+
+### Backend NestJS
+
+**Cobertura de Tests:**
+- ✅ **7 suites de tests** con **46 tests** pasando
+- ✅ Casos de uso (CheckIn, CheckOut, CreateEmployee, GetEmployee, etc.)
+- ✅ Servicios de dominio (AttendanceValidatorService)
+- ✅ Validación de reglas de negocio
+- ✅ Manejo de errores y excepciones
+
+**Ejecutar Tests:**
+```bash
+npm test              # Ejecutar todos los tests
+npm run test:watch    # Modo watch para desarrollo
+npm run test:cov      # Con reporte de cobertura
+```
+
+**Tests Incluidos:**
+- `attendance-validator.service.spec.ts` - Validación de tardanzas y cálculos
+- `check-in.use-case.spec.ts` - Registro de entrada con validaciones
+- `check-out.use-case.spec.ts` - Registro de salida con validaciones
+- `create-employee.use-case.spec.ts` - Creación de empleados
+- `get-employee.use-case.spec.ts` - Obtención de empleados
+- `get-all-employees.use-case.spec.ts` - Listado de empleados
+- `generate-attendance-report.use-case.spec.ts` - Generación de reportes
+
+### Azure Function
+
+**Cobertura de Tests:**
+- ✅ **2 suites de tests** con **23 tests** pasando
+- ✅ Validación de mensajes de Service Bus
+- ✅ Envío de emails
+- ✅ Manejo de errores
+
+**Ejecutar Tests:**
+```bash
+cd azure-functions
+npm test              # Ejecutar todos los tests
+npm run test:watch    # Modo watch
+npm run test:coverage # Con reporte de cobertura
+```
+
+**Tests Incluidos:**
+- `NotifyLateCheckIn/__tests__/index.test.ts` - Función principal
+- `shared/services/__tests__/email.service.test.ts` - Servicio de email
+
+### Resultados Actuales
+
+```
+✅ Backend: 7 suites pasadas, 46 tests pasando
+✅ Azure Function: 2 suites pasadas, 23 tests pasando
+✅ Total: 9 suites, 69 tests pasando
+```
+
 ## 🤝 Contribuir
 
 1. Lee las [Reglas de Desarrollo](docs/DEVELOPMENT_RULES.md)
 2. Asegúrate de que los tests pasen: `npm run test`
 3. Verifica el linter: `npm run lint`
 4. Formatea el código: `npm run format`
+5. Añade tests para nuevas funcionalidades
 
 ## 📄 Licencia
 
