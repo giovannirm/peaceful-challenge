@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import { Test, TestingModule } from '@nestjs/testing';
-import { NotFoundException, BadRequestException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 import { CheckInUseCase } from './check-in.use-case';
 import { Attendance } from '@attendance/domain/entities/attendance.entity';
 import { AttendanceType } from '@shared/domain/value-objects/attendance-type.vo';
@@ -19,14 +20,18 @@ describe('CheckInUseCase', () => {
   let notificationQueue: jest.Mocked<INotificationQueue>;
   let attendanceValidator: jest.Mocked<IAttendanceValidator>;
 
-  const mockEmployee: Employee = Employee.create(
-    'Juan',
-    'Pérez',
-    '12345678',
-    'juan.perez@example.com',
+  // Helper para asignar id a empleados en tests
+  function assignEmployeeId(
+    employee: Employee,
+    id: number,
+  ): Employee & { id: number } {
+    return Object.assign(employee, { id });
+  }
+
+  const mockEmployee: Employee & { id: number } = assignEmployeeId(
+    Employee.create('Juan', 'Pérez', '12345678', 'juan.perez@example.com'),
+    1,
   );
-  // Asignar un ID al empleado mock
-  (mockEmployee as any).id = 1;
 
   beforeEach(async () => {
     const mockEmployeeRepository = {
@@ -144,7 +149,7 @@ describe('CheckInUseCase', () => {
       expect(attendanceRepository.save).not.toHaveBeenCalled();
     });
 
-    it('debe lanzar BadRequestException si ya existe un check-in el mismo día', async () => {
+    it('debe lanzar DuplicateCheckInException si ya existe un check-in el mismo día', async () => {
       const recordTime = new Date(checkInDto.recordTime);
       const existingCheckIn = Attendance.create(
         1,
@@ -160,7 +165,7 @@ describe('CheckInUseCase', () => {
       );
 
       await expect(useCase.execute(checkInDto)).rejects.toThrow(
-        BadRequestException,
+        DuplicateCheckInException,
       );
 
       expect(attendanceRepository.save).not.toHaveBeenCalled();
@@ -188,11 +193,15 @@ describe('CheckInUseCase', () => {
 
       await useCase.execute(lateCheckInDto);
 
-      expect(attendanceValidator.isLateCheckIn).toHaveBeenCalledWith(recordTime);
+      expect(attendanceValidator.isLateCheckIn).toHaveBeenCalledWith(
+        recordTime,
+      );
       expect(attendanceValidator.calculateLateMinutes).toHaveBeenCalledWith(
         recordTime,
       );
-      expect(notificationQueue.sendLateCheckInNotification).toHaveBeenCalledWith(
+      expect(
+        notificationQueue.sendLateCheckInNotification,
+      ).toHaveBeenCalledWith(
         1,
         'juan.perez@example.com',
         'Juan Pérez',
@@ -218,17 +227,16 @@ describe('CheckInUseCase', () => {
 
       await useCase.execute(checkInDto);
 
-      expect(notificationQueue.sendLateCheckInNotification).not.toHaveBeenCalled();
+      expect(
+        notificationQueue.sendLateCheckInNotification,
+      ).not.toHaveBeenCalled();
     });
 
     it('no debe enviar notificación si el empleado no tiene email', async () => {
-      const employeeWithoutEmail = Employee.create(
-        'María',
-        'García',
-        '87654321',
-        null,
+      const employeeWithoutEmail = assignEmployeeId(
+        Employee.create('María', 'García', '87654321', null),
+        2,
       );
-      (employeeWithoutEmail as any).id = 2;
 
       const recordTime = new Date('2025-11-07T10:30:00Z');
       const lateCheckInDto = {
@@ -253,10 +261,17 @@ describe('CheckInUseCase', () => {
 
       await useCase.execute(lateCheckInDto);
 
-      expect(notificationQueue.sendLateCheckInNotification).not.toHaveBeenCalled();
+      expect(
+        notificationQueue.sendLateCheckInNotification,
+      ).not.toHaveBeenCalled();
     });
 
     it('no debe fallar el caso de uso si falla el envío de notificación', async () => {
+      // Silenciar el logger para evitar ruido en los tests
+      const loggerErrorSpy = jest
+        .spyOn(useCase['logger'], 'error')
+        .mockImplementation();
+
       const recordTime = new Date('2025-11-07T10:30:00Z');
       const lateCheckInDto = {
         ...checkInDto,
@@ -283,7 +298,12 @@ describe('CheckInUseCase', () => {
 
       expect(result).toBeInstanceOf(Attendance);
       expect(attendanceRepository.save).toHaveBeenCalled();
+      expect(loggerErrorSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Error al enviar notificación de tardanza'),
+        expect.any(String),
+      );
+
+      loggerErrorSpy.mockRestore();
     });
   });
 });
-

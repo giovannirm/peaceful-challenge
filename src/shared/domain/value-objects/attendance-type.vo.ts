@@ -24,4 +24,3 @@ export class AttendanceTypeVO {
     return this.value === other.value;
   }
 }
-

@@ -28,5 +28,3 @@ export class GetEmployeeUseCase {
     return employee;
   }
 }
-
-

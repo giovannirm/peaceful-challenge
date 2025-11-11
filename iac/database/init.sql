@@ -32,7 +32,7 @@ END
 ELSE
 BEGIN
     INSERT INTO employees (first_name, last_name, document_number, email) VALUES 
-    (N'Juan', N'Pérez', N'12345678', N'juan.perez@example.com'),
+    (N'Giovanni', N'Rojas', N'73253070', N'giovanni.rojas.morales@outlook.com'),
     (N'María', N'García', N'87654321', N'maria.garcia@example.com'),
     (N'Carlos', N'López', N'11223344', N'carlos.lopez@example.com'),
     (N'Ana', N'Martínez', N'55667788', N'ana.martinez@example.com'),

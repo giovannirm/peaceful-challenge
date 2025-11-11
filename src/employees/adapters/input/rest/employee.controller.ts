@@ -20,7 +20,10 @@ import { UpdateEmployeeDto } from '@employees/application/dto/update-employee.dt
 import { EmployeeResponseDto } from '@employees/application/dto/employee-response.dto';
 import { EmployeeResponseMapper } from './employee-response.mapper';
 import { API_ROUTES } from '@shared/adapters/input/rest/routes.constants';
-import { SWAGGER_CONSTANTS, API_VERSIONING } from '@shared/adapters/input/rest/swagger.constants';
+import {
+  SWAGGER_CONSTANTS,
+  API_VERSIONING,
+} from '@shared/adapters/input/rest/swagger.constants';
 
 @ApiTags(SWAGGER_CONSTANTS.TAGS.EMPLOYEES)
 @Controller({

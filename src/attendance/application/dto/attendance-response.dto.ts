@@ -33,5 +33,3 @@ export class AttendanceResponseDto {
   })
   createdAt: Date;
 }
-
-

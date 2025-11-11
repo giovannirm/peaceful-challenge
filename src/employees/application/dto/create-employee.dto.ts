@@ -55,5 +55,3 @@ export class CreateEmployeeDto {
   @MaxLength(255)
   email?: string;
 }
-
-

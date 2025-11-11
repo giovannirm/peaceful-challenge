@@ -40,4 +40,3 @@ export class CheckOutDto {
   @IsDateString()
   recordTime: string;
 }
-

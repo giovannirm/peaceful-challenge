@@ -15,4 +15,3 @@ export const LOGGER_CONSTANTS = {
     MIGRATION: 'migration',
   },
 } as const;
-

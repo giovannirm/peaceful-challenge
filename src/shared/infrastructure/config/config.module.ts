@@ -25,4 +25,3 @@ import { INFRASTRUCTURE_CONSTANTS } from '@shared/infrastructure/constants/app.c
   exports: [AppConfigService],
 })
 export class AppConfigModule {}
-

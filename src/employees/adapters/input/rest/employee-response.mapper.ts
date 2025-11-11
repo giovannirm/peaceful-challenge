@@ -17,4 +17,3 @@ export class EmployeeResponseMapper {
     return employees.map((employee) => this.toDto(employee));
   }
 }
-

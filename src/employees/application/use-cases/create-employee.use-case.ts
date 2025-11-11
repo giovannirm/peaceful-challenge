@@ -1,16 +1,9 @@
-import {
-  Injectable,
-  Inject,
-  Logger,
-  ConflictException,
-} from '@nestjs/common';
+import { Injectable, Inject, Logger } from '@nestjs/common';
 import { Employee } from '@employees/domain/entities/employee.entity';
 import type { IEmployeeRepository } from '@employees/domain/ports/employee.repository.port';
 import { CreateEmployeeDto } from '@employees/application/dto/create-employee.dto';
 import { DEPENDENCY_INJECTION_TOKENS } from '@shared/application/config/dependency-injection.tokens';
-import {
-  DuplicateDocumentNumberException,
-} from '@employees/domain/exceptions/employee.exception';
+import { DuplicateDocumentNumberException } from '@employees/domain/exceptions/employee.exception';
 
 @Injectable()
 export class CreateEmployeeUseCase {
@@ -27,19 +20,16 @@ export class CreateEmployeeUseCase {
     );
 
     // Validar que no exista un empleado con el mismo número de documento
-    const existingEmployee =
-      await this.employeeRepository.findByDocumentNumber(
-        createEmployeeDto.documentNumber,
-      );
+    const existingEmployee = await this.employeeRepository.findByDocumentNumber(
+      createEmployeeDto.documentNumber,
+    );
 
     if (existingEmployee) {
       this.logger.warn(
         `Intento de crear empleado con documento duplicado: ${createEmployeeDto.documentNumber}`,
       );
-      throw new ConflictException(
-        new DuplicateDocumentNumberException(
-          createEmployeeDto.documentNumber,
-        ).message,
+      throw new DuplicateDocumentNumberException(
+        createEmployeeDto.documentNumber,
       );
     }
 
@@ -53,12 +43,8 @@ export class CreateEmployeeUseCase {
 
     const savedEmployee = await this.employeeRepository.save(employee);
 
-    this.logger.log(
-      `Empleado creado exitosamente con ID: ${savedEmployee.id}`,
-    );
+    this.logger.log(`Empleado creado exitosamente con ID: ${savedEmployee.id}`);
 
     return savedEmployee;
   }
 }
-
-

@@ -14,4 +14,3 @@ export const ORDER_BY_FIELDS = {
   ID: 'id',
   RECORD_TIME: 'recordTime',
 } as const;
-

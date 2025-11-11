@@ -9,6 +9,7 @@ import {
   Logger,
   HttpCode,
   HttpStatus,
+  BadRequestException,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -154,7 +155,7 @@ export class AttendanceController {
     );
 
     if (!startDateStr || !endDateStr) {
-      throw new Error(
+      throw new BadRequestException(
         `${QUERY_PARAMS.START_DATE} y ${QUERY_PARAMS.END_DATE} son requeridos`,
       );
     }
@@ -163,7 +164,7 @@ export class AttendanceController {
     const endDate = new Date(endDateStr);
 
     if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
-      throw new Error(ERROR_MESSAGES.INVALID_DATE_FORMAT);
+      throw new BadRequestException(ERROR_MESSAGES.INVALID_DATE_FORMAT);
     }
 
     return this.generateAttendanceReportUseCase.execute(

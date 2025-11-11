@@ -22,4 +22,3 @@ export class Attendance {
     return new Attendance(null, employeeId, type, coordinates, recordTime);
   }
 }
-

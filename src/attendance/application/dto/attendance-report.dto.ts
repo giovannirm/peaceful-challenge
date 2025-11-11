@@ -4,10 +4,16 @@ export class DayAttendanceDto {
   @ApiProperty({ description: 'Fecha del día', example: '2024-01-15' })
   date: string;
 
-  @ApiProperty({ description: 'Indica si tiene registro de entrada', example: true })
+  @ApiProperty({
+    description: 'Indica si tiene registro de entrada',
+    example: true,
+  })
   hasCheckIn: boolean;
 
-  @ApiProperty({ description: 'Indica si tiene registro de salida', example: true })
+  @ApiProperty({
+    description: 'Indica si tiene registro de salida',
+    example: true,
+  })
   hasCheckOut: boolean;
 
   @ApiProperty({
@@ -38,13 +44,22 @@ export class AttendanceReportDto {
   @ApiProperty({ description: 'ID del empleado', example: 1 })
   employeeId: number;
 
-  @ApiProperty({ description: 'Nombre completo del empleado', example: 'Juan Pérez' })
+  @ApiProperty({
+    description: 'Nombre completo del empleado',
+    example: 'Juan Pérez',
+  })
   employeeName: string;
 
-  @ApiProperty({ description: 'Fecha de inicio del reporte', example: '2024-01-01' })
+  @ApiProperty({
+    description: 'Fecha de inicio del reporte',
+    example: '2024-01-01',
+  })
   startDate: string;
 
-  @ApiProperty({ description: 'Fecha de fin del reporte', example: '2024-01-31' })
+  @ApiProperty({
+    description: 'Fecha de fin del reporte',
+    example: '2024-01-31',
+  })
   endDate: string;
 
   @ApiProperty({ description: 'Total de días en el rango', example: 31 })
@@ -62,5 +77,3 @@ export class AttendanceReportDto {
   })
   attendances: DayAttendanceDto[];
 }
-
-

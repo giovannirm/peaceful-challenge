@@ -12,6 +12,7 @@ import {
 export class MockNotificationQueue implements INotificationQueue {
   private readonly logger = new Logger(MockNotificationQueue.name);
 
+  // eslint-disable-next-line @typescript-eslint/require-await
   async sendLateCheckInNotification(
     employeeId: number,
     employeeEmail: string,
@@ -35,4 +36,3 @@ export class MockNotificationQueue implements INotificationQueue {
     );
   }
 }
-

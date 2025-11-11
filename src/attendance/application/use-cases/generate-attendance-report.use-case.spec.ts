@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundException, BadRequestException } from '@nestjs/common';
 import { GenerateAttendanceReportUseCase } from './generate-attendance-report.use-case';
@@ -16,13 +17,18 @@ describe('GenerateAttendanceReportUseCase', () => {
   let attendanceRepository: jest.Mocked<IAttendanceRepository>;
   let attendanceValidator: jest.Mocked<IAttendanceValidator>;
 
-  const mockEmployee: Employee = Employee.create(
-    'Juan',
-    'Pérez',
-    '12345678',
-    'juan.perez@example.com',
+  // Helper para asignar id a empleados en tests
+  function assignEmployeeId(
+    employee: Employee,
+    id: number,
+  ): Employee & { id: number } {
+    return Object.assign(employee, { id });
+  }
+
+  const mockEmployee: Employee & { id: number } = assignEmployeeId(
+    Employee.create('Juan', 'Pérez', '12345678', 'juan.perez@example.com'),
+    1,
   );
-  (mockEmployee as any).id = 1;
 
   beforeEach(async () => {
     const mockEmployeeRepository = {
@@ -193,4 +199,3 @@ describe('GenerateAttendanceReportUseCase', () => {
     });
   });
 });
-

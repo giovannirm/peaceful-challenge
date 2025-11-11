@@ -39,13 +39,10 @@ export class TypeOrmEmployeeRepository implements IEmployeeRepository {
     return entities.map((entity) => EmployeeTypeOrmEntity.toDomain(entity));
   }
 
-  async findByDocumentNumber(
-    documentNumber: string,
-  ): Promise<Employee | null> {
+  async findByDocumentNumber(documentNumber: string): Promise<Employee | null> {
     const entity = await this.repository.findOne({
       where: { documentNumber },
     });
     return entity ? EmployeeTypeOrmEntity.toDomain(entity) : null;
   }
 }
-

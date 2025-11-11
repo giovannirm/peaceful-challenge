@@ -7,4 +7,3 @@ export interface IEmployeeRepository {
   findAll(): Promise<Employee[]>;
   findByDocumentNumber(documentNumber: string): Promise<Employee | null>;
 }
-

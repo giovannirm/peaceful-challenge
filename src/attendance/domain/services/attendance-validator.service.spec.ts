@@ -1,5 +1,4 @@
 import { AttendanceValidatorService } from './attendance-validator.service';
-import { BUSINESS_CONSTANTS } from '@shared/domain/constants/business.constants';
 
 describe('AttendanceValidatorService', () => {
   let service: AttendanceValidatorService;

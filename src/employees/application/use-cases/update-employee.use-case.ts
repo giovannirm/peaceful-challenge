@@ -1,18 +1,10 @@
-import {
-  Injectable,
-  Inject,
-  Logger,
-  NotFoundException,
-  ConflictException,
-} from '@nestjs/common';
+import { Injectable, Inject, Logger, NotFoundException } from '@nestjs/common';
 import { Employee } from '@employees/domain/entities/employee.entity';
 import type { IEmployeeRepository } from '@employees/domain/ports/employee.repository.port';
 import { UpdateEmployeeDto } from '@employees/application/dto/update-employee.dto';
 import { DEPENDENCY_INJECTION_TOKENS } from '@shared/application/config/dependency-injection.tokens';
 import { ERROR_MESSAGES } from '@shared/domain/constants/error-messages.constants';
-import {
-  DuplicateDocumentNumberException,
-} from '@employees/domain/exceptions/employee.exception';
+import { DuplicateDocumentNumberException } from '@employees/domain/exceptions/employee.exception';
 
 @Injectable()
 export class UpdateEmployeeUseCase {
@@ -51,10 +43,8 @@ export class UpdateEmployeeUseCase {
         this.logger.warn(
           `Intento de actualizar empleado con documento duplicado: ${updateEmployeeDto.documentNumber}`,
         );
-        throw new ConflictException(
-          new DuplicateDocumentNumberException(
-            updateEmployeeDto.documentNumber,
-          ).message,
+        throw new DuplicateDocumentNumberException(
+          updateEmployeeDto.documentNumber,
         );
       }
     }
@@ -77,4 +67,3 @@ export class UpdateEmployeeUseCase {
     return savedEmployee;
   }
 }
-

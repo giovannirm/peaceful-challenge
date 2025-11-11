@@ -9,6 +9,7 @@ import {
   SWAGGER_CONSTANTS,
   API_VERSIONING,
 } from '@shared/adapters/input/rest/swagger.constants';
+import { GlobalExceptionFilter } from '@shared/adapters/input/rest/exception.filter';
 
 import { LOGGER_CONSTANTS } from '@shared/infrastructure/constants/logger.constants';
 
@@ -32,6 +33,9 @@ async function bootstrap() {
       transform: true,
     }),
   );
+
+  // Configurar filtro global de excepciones
+  app.useGlobalFilters(new GlobalExceptionFilter());
 
   // Habilitar CORS
   app.enableCors();

@@ -9,4 +9,3 @@ export const DEPENDENCY_INJECTION_TOKENS = {
   NOTIFICATION_QUEUE: 'INotificationQueue',
   ATTENDANCE_VALIDATOR: 'IAttendanceValidator',
 } as const;
-

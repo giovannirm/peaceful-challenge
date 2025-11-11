@@ -16,6 +16,7 @@ import {
 } from '@attendance/application/dto/attendance-report.dto';
 import type { IAttendanceValidator } from '@attendance/domain/ports/attendance-validator.port';
 import { DATE_FORMAT } from '@shared/domain/constants/date-format.constants';
+import { Attendance } from '@attendance/domain/entities/attendance.entity';
 
 @Injectable()
 export class GenerateAttendanceReportUseCase {
@@ -43,7 +44,9 @@ export class GenerateAttendanceReportUseCase {
     const employee = await this.employeeRepository.findById(employeeId);
     if (!employee) {
       this.logger.warn(`Empleado no encontrado: ${employeeId}`);
-      throw new NotFoundException(ERROR_MESSAGES.EMPLOYEE_NOT_FOUND(employeeId));
+      throw new NotFoundException(
+        ERROR_MESSAGES.EMPLOYEE_NOT_FOUND(employeeId),
+      );
     }
 
     // Validar rango de fechas
@@ -116,7 +119,7 @@ export class GenerateAttendanceReportUseCase {
 
   private processDayAttendance(
     day: Date,
-    attendances: import('@attendance/domain/entities/attendance.entity').Attendance[],
+    attendances: Attendance[],
   ): DayAttendanceDto {
     const dayStart = this.attendanceValidator.getStartOfDay(day);
     const dayEnd = this.attendanceValidator.getEndOfDay(day);
@@ -162,5 +165,3 @@ export class GenerateAttendanceReportUseCase {
     };
   }
 }
-
-

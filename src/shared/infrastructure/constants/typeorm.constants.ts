@@ -12,4 +12,3 @@ export const TYPEORM_CONSTANTS = {
     PRODUCTION: ['error'] as const,
   },
 } as const;
-

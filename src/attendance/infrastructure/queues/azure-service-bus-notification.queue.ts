@@ -39,8 +39,8 @@ export class AzureServiceBusNotificationQueue
 
     try {
       // TypeScript type narrowing: después del if sabemos que son strings
-      this.serviceBusClient = new ServiceBusClient(connectionString as string);
-      this.sender = this.serviceBusClient.createSender(queueName as string);
+      this.serviceBusClient = new ServiceBusClient(connectionString);
+      this.sender = this.serviceBusClient.createSender(queueName);
       this.logger.log(`Azure Service Bus inicializado. Cola: ${queueName}`);
     } catch (error) {
       const errorMessage =

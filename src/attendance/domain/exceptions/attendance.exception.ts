@@ -27,4 +27,3 @@ export class DuplicateCheckOutException extends DomainException {
     super(ERROR_MESSAGES.DUPLICATE_CHECK_OUT(employeeId, date));
   }
 }
-

@@ -51,5 +51,3 @@ export class CreateAttendanceDto {
   @IsDateString()
   recordTime: string;
 }
-
-

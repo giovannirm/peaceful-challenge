@@ -1,10 +1,4 @@
-import {
-  Injectable,
-  NotFoundException,
-  Inject,
-  Logger,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException, Inject, Logger } from '@nestjs/common';
 import { Attendance } from '@attendance/domain/entities/attendance.entity';
 import { AttendanceType } from '@shared/domain/value-objects/attendance-type.vo';
 import type { IEmployeeRepository } from '@employees/domain/ports/employee.repository.port';
@@ -62,12 +56,7 @@ export class CheckInUseCase {
       this.logger.warn(
         `Intento de check-in duplicado para empleado ${checkInDto.employeeId} en ${recordTime.toLocaleDateString()}`,
       );
-      throw new BadRequestException(
-        new DuplicateCheckInException(
-          checkInDto.employeeId,
-          recordTime,
-        ).message,
-      );
+      throw new DuplicateCheckInException(checkInDto.employeeId, recordTime);
     }
 
     // Crear el registro de asistencia (siempre CHECK_IN para este endpoint)
@@ -104,9 +93,12 @@ export class CheckInUseCase {
             `Notificación de tardanza enviada a la cola para empleado ${employee.id}`,
           );
         } catch (error) {
+          const errorMessage =
+            error instanceof Error ? error.message : String(error);
+          const errorStack = error instanceof Error ? error.stack : undefined;
           this.logger.error(
-            `Error al enviar notificación de tardanza: ${error.message}`,
-            error.stack,
+            `Error al enviar notificación de tardanza: ${errorMessage}`,
+            errorStack,
           );
           // No fallamos el caso de uso si falla la notificación
         }

@@ -18,4 +18,3 @@ export interface LateCheckInNotificationMessage {
   checkInTime: string; // ISO 8601
   lateMinutes: number;
 }
-

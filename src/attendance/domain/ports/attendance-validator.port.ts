@@ -23,4 +23,3 @@ export interface IAttendanceValidator {
    */
   getEndOfDay(date: Date): Date;
 }
-

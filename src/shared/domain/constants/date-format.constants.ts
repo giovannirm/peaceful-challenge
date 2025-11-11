@@ -9,4 +9,3 @@ export const DATE_FORMAT = {
     ES_ES: 'es-ES',
   },
 } as const;
-

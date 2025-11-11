@@ -77,4 +77,3 @@ export const envValidationSchema = Joi.object({
         VALIDATION_MESSAGES.AZURE_SERVICE_BUS_QUEUE_NAME_INVALID_STRING,
     }),
 });
-

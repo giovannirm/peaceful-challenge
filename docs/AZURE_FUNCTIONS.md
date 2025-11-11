@@ -78,7 +78,7 @@ npm install
 npm run build
 
 # 2. Desplegar
-func azure functionapp publish <FUNCTION_APP_NAME>
+func azure functionapp publish <FUNCTION_APP_NAME> --build remote
 # El nombre de la Function App está en los outputs de Terraform
 ```
 

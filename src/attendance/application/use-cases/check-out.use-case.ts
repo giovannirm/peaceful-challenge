@@ -1,10 +1,4 @@
-import {
-  Injectable,
-  NotFoundException,
-  Inject,
-  Logger,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException, Inject, Logger } from '@nestjs/common';
 import { Attendance } from '@attendance/domain/entities/attendance.entity';
 import { AttendanceType } from '@shared/domain/value-objects/attendance-type.vo';
 import type { IEmployeeRepository } from '@employees/domain/ports/employee.repository.port';
@@ -39,9 +33,7 @@ export class CheckOutUseCase {
     );
 
     if (!employee) {
-      this.logger.warn(
-        `Empleado no encontrado: ${checkOutDto.employeeId}`,
-      );
+      this.logger.warn(`Empleado no encontrado: ${checkOutDto.employeeId}`);
       throw new NotFoundException(
         ERROR_MESSAGES.EMPLOYEE_NOT_FOUND(checkOutDto.employeeId),
       );
@@ -61,12 +53,7 @@ export class CheckOutUseCase {
       this.logger.warn(
         `Intento de check-out duplicado para empleado ${checkOutDto.employeeId} en ${recordTime.toLocaleDateString()}`,
       );
-      throw new BadRequestException(
-        new DuplicateCheckOutException(
-          checkOutDto.employeeId,
-          recordTime,
-        ).message,
-      );
+      throw new DuplicateCheckOutException(checkOutDto.employeeId, recordTime);
     }
 
     // Validar que exista un check-in previo el mismo día
@@ -80,12 +67,7 @@ export class CheckOutUseCase {
       this.logger.warn(
         `Intento de check-out sin check-in previo para empleado ${checkOutDto.employeeId} en ${recordTime.toLocaleDateString()}`,
       );
-      throw new BadRequestException(
-        new MissingCheckInException(
-          checkOutDto.employeeId,
-          recordTime,
-        ).message,
-      );
+      throw new MissingCheckInException(checkOutDto.employeeId, recordTime);
     }
 
     // Crear el registro de asistencia (siempre CHECK_OUT para este endpoint)
@@ -106,5 +88,3 @@ export class CheckOutUseCase {
     return savedAttendance;
   }
 }
-
-

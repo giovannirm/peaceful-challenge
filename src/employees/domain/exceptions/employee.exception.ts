@@ -9,4 +9,3 @@ export class DuplicateDocumentNumberException extends DomainException {
     super(ERROR_MESSAGES.DUPLICATE_DOCUMENT_NUMBER(documentNumber));
   }
 }
-

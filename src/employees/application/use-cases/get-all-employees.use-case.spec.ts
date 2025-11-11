@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import { Test, TestingModule } from '@nestjs/testing';
 import { GetAllEmployeesUseCase } from './get-all-employees.use-case';
 import { Employee } from '@employees/domain/entities/employee.entity';
@@ -36,16 +37,30 @@ describe('GetAllEmployeesUseCase', () => {
     jest.clearAllMocks();
   });
 
+  // Helper para asignar id a empleados en tests
+  function assignEmployeeId(
+    employee: Employee,
+    id: number,
+  ): Employee & { id: number } {
+    return Object.assign(employee, { id });
+  }
+
   describe('execute', () => {
     it('debe retornar una lista de empleados', async () => {
       const employees = [
-        Employee.create('Juan', 'Pérez', '12345678', 'juan@example.com'),
-        Employee.create('María', 'García', '87654321', 'maria@example.com'),
-        Employee.create('Pedro', 'Sánchez', '11223344', null),
+        assignEmployeeId(
+          Employee.create('Juan', 'Pérez', '12345678', 'juan@example.com'),
+          1,
+        ),
+        assignEmployeeId(
+          Employee.create('María', 'García', '87654321', 'maria@example.com'),
+          2,
+        ),
+        assignEmployeeId(
+          Employee.create('Pedro', 'Sánchez', '11223344', null),
+          3,
+        ),
       ];
-      employees.forEach((emp, index) => {
-        (emp as any).id = index + 1;
-      });
 
       employeeRepository.findAll.mockResolvedValue(employees);
 
@@ -69,4 +84,3 @@ describe('GetAllEmployeesUseCase', () => {
     });
   });
 });
-

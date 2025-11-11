@@ -29,5 +29,3 @@ export class EmployeeResponseDto {
   })
   email: string | null;
 }
-
-

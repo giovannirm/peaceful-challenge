@@ -40,4 +40,3 @@ export class AttendanceTypeOrmEntity {
   @CreateDateColumn({ name: DATABASE.COLUMNS.ATTENDANCE.CREATED_AT })
   createdAt: Date;
 }
-

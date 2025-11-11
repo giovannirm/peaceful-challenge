@@ -7,14 +7,11 @@ import { GetAttendancesByEmployeeUseCase } from '@attendance/application/use-cas
 import { GenerateAttendanceReportUseCase } from '@attendance/application/use-cases/generate-attendance-report.use-case';
 import { TypeOrmAttendanceRepository } from '@attendance/adapters/output/persistence/typeorm-attendance.repository';
 import { AttendanceTypeOrmEntity } from '@attendance/infrastructure/persistence/typeorm/entities/attendance.typeorm.entity';
-import { IAttendanceRepository } from '@attendance/domain/ports/attendance.repository.port';
 import { EmployeeModule } from '@employees/infrastructure/config/employee.module';
 import { DEPENDENCY_INJECTION_TOKENS } from '@shared/application/config/dependency-injection.tokens';
-import { INotificationQueue } from '@attendance/domain/ports/notification.queue.port';
 import { MockNotificationQueue } from '@attendance/infrastructure/queues/mock-notification.queue';
 import { AzureServiceBusNotificationQueue } from '@attendance/infrastructure/queues/azure-service-bus-notification.queue';
 import { AppConfigService } from '@shared/infrastructure/config/config.service';
-import { IAttendanceValidator } from '@attendance/domain/ports/attendance-validator.port';
 import { AttendanceValidatorService } from '@attendance/domain/services/attendance-validator.service';
 
 @Module({
@@ -53,4 +50,3 @@ import { AttendanceValidatorService } from '@attendance/domain/services/attendan
   ],
 })
 export class AttendanceModule {}
-

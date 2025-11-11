@@ -4,8 +4,7 @@
  */
 export const VALIDATION_MESSAGES = {
   NODE_ENV_REQUIRED: 'NODE_ENV es requerido',
-  NODE_ENV_INVALID: (validValues: string) =>
-    `NODE_ENV debe ser ${validValues}`,
+  NODE_ENV_INVALID: (validValues: string) => `NODE_ENV debe ser ${validValues}`,
   PORT_REQUIRED: 'PORT es requerido',
   PORT_INVALID_NUMBER: 'PORT debe ser un número',
   PORT_INVALID_RANGE: 'PORT debe ser un puerto válido (1-65535)',
@@ -30,4 +29,3 @@ export const VALIDATION_MESSAGES = {
   ENV_VARIABLES_MISSING: (missingVars: string) =>
     `Las siguientes variables de entorno son requeridas pero no están definidas: ${missingVars}`,
 } as const;
-

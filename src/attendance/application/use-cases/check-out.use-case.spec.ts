@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import { Test, TestingModule } from '@nestjs/testing';
-import { NotFoundException, BadRequestException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 import { CheckOutUseCase } from './check-out.use-case';
 import { Attendance } from '@attendance/domain/entities/attendance.entity';
 import { AttendanceType } from '@shared/domain/value-objects/attendance-type.vo';
@@ -18,13 +19,18 @@ describe('CheckOutUseCase', () => {
   let employeeRepository: jest.Mocked<IEmployeeRepository>;
   let attendanceRepository: jest.Mocked<IAttendanceRepository>;
 
-  const mockEmployee: Employee = Employee.create(
-    'Juan',
-    'Pérez',
-    '12345678',
-    'juan.perez@example.com',
+  // Helper para asignar id a empleados en tests
+  function assignEmployeeId(
+    employee: Employee,
+    id: number,
+  ): Employee & { id: number } {
+    return Object.assign(employee, { id });
+  }
+
+  const mockEmployee: Employee & { id: number } = assignEmployeeId(
+    Employee.create('Juan', 'Pérez', '12345678', 'juan.perez@example.com'),
+    1,
   );
-  (mockEmployee as any).id = 1;
 
   beforeEach(async () => {
     const mockEmployeeRepository = {
@@ -128,7 +134,7 @@ describe('CheckOutUseCase', () => {
       expect(attendanceRepository.save).not.toHaveBeenCalled();
     });
 
-    it('debe lanzar BadRequestException si ya existe un check-out el mismo día', async () => {
+    it('debe lanzar DuplicateCheckOutException si ya existe un check-out el mismo día', async () => {
       const recordTime = new Date(checkOutDto.recordTime);
       const existingCheckOut = Attendance.create(
         1,
@@ -144,22 +150,20 @@ describe('CheckOutUseCase', () => {
       );
 
       await expect(useCase.execute(checkOutDto)).rejects.toThrow(
-        BadRequestException,
+        DuplicateCheckOutException,
       );
 
       expect(attendanceRepository.save).not.toHaveBeenCalled();
     });
 
-    it('debe lanzar BadRequestException si no existe un check-in previo', async () => {
-      const recordTime = new Date(checkOutDto.recordTime);
-
+    it('debe lanzar MissingCheckInException si no existe un check-in previo', async () => {
       employeeRepository.findById.mockResolvedValue(mockEmployee);
       attendanceRepository.findLastByEmployeeIdAndType
         .mockResolvedValueOnce(null) // No hay check-out previo
         .mockResolvedValueOnce(null); // No hay check-in previo
 
       await expect(useCase.execute(checkOutDto)).rejects.toThrow(
-        BadRequestException,
+        MissingCheckInException,
       );
 
       expect(attendanceRepository.save).not.toHaveBeenCalled();
@@ -197,9 +201,8 @@ describe('CheckOutUseCase', () => {
         .mockResolvedValueOnce(null); // No hay check-in del mismo día
 
       await expect(useCase.execute(checkOutDto)).rejects.toThrow(
-        BadRequestException,
+        MissingCheckInException,
       );
     });
   });
 });
-

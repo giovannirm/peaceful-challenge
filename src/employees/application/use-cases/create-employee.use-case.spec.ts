@@ -1,10 +1,19 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import { Test, TestingModule } from '@nestjs/testing';
-import { ConflictException } from '@nestjs/common';
 import { CreateEmployeeUseCase } from './create-employee.use-case';
 import { Employee } from '@employees/domain/entities/employee.entity';
+import { CreateEmployeeDto } from '@employees/application/dto/create-employee.dto';
 import { DEPENDENCY_INJECTION_TOKENS } from '@shared/application/config/dependency-injection.tokens';
 import { DuplicateDocumentNumberException } from '@employees/domain/exceptions/employee.exception';
 import type { IEmployeeRepository } from '@employees/domain/ports/employee.repository.port';
+
+// Helper para asignar id a empleados en tests
+function assignEmployeeId(
+  employee: Employee,
+  id: number,
+): Employee & { id: number } {
+  return Object.assign(employee, { id });
+}
 
 describe('CreateEmployeeUseCase', () => {
   let useCase: CreateEmployeeUseCase;
@@ -53,10 +62,10 @@ describe('CreateEmployeeUseCase', () => {
         createEmployeeDto.documentNumber,
         createEmployeeDto.email,
       );
-      (savedEmployee as any).id = 1;
+      const savedEmployeeWithId = assignEmployeeId(savedEmployee, 1);
 
       employeeRepository.findByDocumentNumber.mockResolvedValue(null);
-      employeeRepository.save.mockResolvedValue(savedEmployee);
+      employeeRepository.save.mockResolvedValue(savedEmployeeWithId);
 
       const result = await useCase.execute(createEmployeeDto);
 
@@ -83,32 +92,34 @@ describe('CreateEmployeeUseCase', () => {
         createEmployeeDtoWithoutEmail.documentNumber,
         null,
       );
-      (savedEmployee as any).id = 2;
+      const savedEmployeeWithId = assignEmployeeId(savedEmployee, 2);
 
       employeeRepository.findByDocumentNumber.mockResolvedValue(null);
-      employeeRepository.save.mockResolvedValue(savedEmployee);
+      employeeRepository.save.mockResolvedValue(savedEmployeeWithId);
 
-      const result = await useCase.execute(createEmployeeDtoWithoutEmail as any);
+      const result = await useCase.execute(
+        createEmployeeDtoWithoutEmail as CreateEmployeeDto,
+      );
 
       expect(result).toBeInstanceOf(Employee);
       expect(result.email).toBeNull();
     });
 
-    it('debe lanzar ConflictException si el número de documento ya existe', async () => {
+    it('debe lanzar DuplicateDocumentNumberException si el número de documento ya existe', async () => {
       const existingEmployee = Employee.create(
         'Pedro',
         'Sánchez',
         '12345678',
         'pedro@example.com',
       );
-      (existingEmployee as any).id = 1;
+      const existingEmployeeWithId = assignEmployeeId(existingEmployee, 1);
 
       employeeRepository.findByDocumentNumber.mockResolvedValue(
-        existingEmployee,
+        existingEmployeeWithId,
       );
 
       await expect(useCase.execute(createEmployeeDto)).rejects.toThrow(
-        ConflictException,
+        DuplicateDocumentNumberException,
       );
 
       expect(employeeRepository.save).not.toHaveBeenCalled();
@@ -121,16 +132,15 @@ describe('CreateEmployeeUseCase', () => {
         '12345678',
         'otro@example.com',
       );
-      (existingEmployee as any).id = 5;
+      const existingEmployeeWithId = assignEmployeeId(existingEmployee, 5);
 
       employeeRepository.findByDocumentNumber.mockResolvedValue(
-        existingEmployee,
+        existingEmployeeWithId,
       );
 
       await expect(useCase.execute(createEmployeeDto)).rejects.toThrow(
-        ConflictException,
+        DuplicateDocumentNumberException,
       );
     });
   });
 });
-

@@ -30,4 +30,3 @@ export const INFRASTRUCTURE_CONSTANTS = {
     LOCALHOST: 'localhost',
   },
 } as const;
-

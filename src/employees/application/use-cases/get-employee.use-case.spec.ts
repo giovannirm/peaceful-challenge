@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundException } from '@nestjs/common';
 import { GetEmployeeUseCase } from './get-employee.use-case';
@@ -38,15 +39,20 @@ describe('GetEmployeeUseCase', () => {
     jest.clearAllMocks();
   });
 
+  // Helper para asignar id a empleados en tests
+  function assignEmployeeId(
+    employee: Employee,
+    id: number,
+  ): Employee & { id: number } {
+    return Object.assign(employee, { id });
+  }
+
   describe('execute', () => {
     it('debe retornar un empleado cuando existe', async () => {
-      const employee = Employee.create(
-        'Juan',
-        'Pérez',
-        '12345678',
-        'juan.perez@example.com',
+      const employee = assignEmployeeId(
+        Employee.create('Juan', 'Pérez', '12345678', 'juan.perez@example.com'),
+        1,
       );
-      (employee as any).id = 1;
 
       employeeRepository.findById.mockResolvedValue(employee);
 
@@ -69,8 +75,10 @@ describe('GetEmployeeUseCase', () => {
     });
 
     it('debe retornar empleado sin email si no tiene email configurado', async () => {
-      const employee = Employee.create('María', 'García', '87654321', null);
-      (employee as any).id = 2;
+      const employee = assignEmployeeId(
+        Employee.create('María', 'García', '87654321', null),
+        2,
+      );
 
       employeeRepository.findById.mockResolvedValue(employee);
 
@@ -81,4 +89,3 @@ describe('GetEmployeeUseCase', () => {
     });
   });
 });
-

@@ -22,5 +22,3 @@ export class GetAllEmployeesUseCase {
     return employees;
   }
 }
-
-

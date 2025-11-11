@@ -6,4 +6,3 @@ export const QUERY_PARAMS = {
   START_DATE: 'startDate',
   END_DATE: 'endDate',
 } as const;
-

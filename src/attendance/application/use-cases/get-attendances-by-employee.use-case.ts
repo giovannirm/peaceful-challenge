@@ -28,9 +28,8 @@ export class GetAttendancesByEmployeeUseCase {
       );
     }
 
-    const attendances = await this.attendanceRepository.findByEmployeeId(
-      employeeId,
-    );
+    const attendances =
+      await this.attendanceRepository.findByEmployeeId(employeeId);
 
     this.logger.log(
       `Se encontraron ${attendances.length} registros de asistencia para empleado ${employeeId}`,
@@ -39,5 +38,3 @@ export class GetAttendancesByEmployeeUseCase {
     return attendances;
   }
 }
-
-
